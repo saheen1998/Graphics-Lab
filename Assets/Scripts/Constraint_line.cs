@@ -37,7 +37,7 @@ public class Constraint_line : MonoBehaviour {
 			p[0] = double.Parse(pointData[0]);
 			p[1] = double.Parse(pointData[2]);
 			p[2] = double.Parse(pointData[1]);
-			transform.position = new Vector3((float)p[0]*100, (float)p[1]*100, (float)p[2]*100);
+			transform.position = new Vector3((float)p[0], (float)p[1], (float)p[2]);
 			var point = Instantiate(pointPrefab, transform.position, Quaternion.identity);
 			point.name = "Point " + (i + 1).ToString();
 
@@ -73,6 +73,6 @@ public class Constraint_line : MonoBehaviour {
 
 		Quaternion rot = new Quaternion(qx, qy, qz, qw);
 		Transform obj_line;
-		obj_line = (Transform)Instantiate(linePrefab, new Vector3((float)cent[0]*100, (float)cent[1]*100, (float)cent[2]*100), rot);
+		obj_line = (Transform)Instantiate(linePrefab, new Vector3((float)cent[0], (float)cent[1], (float)cent[2]), rot);
 	}
 }

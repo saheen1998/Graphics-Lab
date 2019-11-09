@@ -14,8 +14,8 @@ public class CamFree_Orbit : MonoBehaviour
         {
             if (EventSystem.current.IsPointerOverGameObject())
                 return;
-            float h = moveSpeed * Input.GetAxis("Mouse X");
-            float v = moveSpeed * Input.GetAxis("Mouse Y");
+            float h = transform.localScale.x/100 * moveSpeed * Input.GetAxis("Mouse X");
+            float v = transform.localScale.x/100 * moveSpeed * Input.GetAxis("Mouse Y");
             transform.Translate(new Vector3(-v, 0, h), Space.Self);
         }
         else if (Input.GetMouseButton(0))

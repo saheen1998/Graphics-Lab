@@ -36,7 +36,7 @@ public class Constraint_axial : MonoBehaviour {
 			p[0] = double.Parse(pointData[0]);
 			p[1] = double.Parse(pointData[2]);
 			p[2] = double.Parse(pointData[1]);
-			transform.position = new Vector3((float)p[0]*100, (float)p[1]*100, (float)p[2]*100);
+			transform.position = new Vector3((float)p[0], (float)p[1], (float)p[2]);
 			var point = Instantiate(pointPrefab, transform.position, Quaternion.identity);
 			point.name = "Point " + (i + 1).ToString();
 
@@ -58,11 +58,11 @@ public class Constraint_axial : MonoBehaviour {
 
 		Quaternion rot = new Quaternion(qx, qy, qz, qw);
 		GameObject obj_axialTorus;
-		Vector3 center = new Vector3((float)dx*100, (float)dz*100, (float)dy*100);
+		Vector3 center = new Vector3((float)dx, (float)dz, (float)dy);
 		obj_axialTorus = (GameObject)Instantiate(torusPrefab, center, rot);
 		//torusTransform = obj_axialTorus.GetComponent<Transform>();
 		//torusTransform.Rotate(-90,0,0,Space.Self);
 		ParticleSystem.ShapeModule ring = obj_axialTorus.transform.GetChild(0).gameObject.GetComponent<ParticleSystem>().shape;
-		ring.radius = Mathf.Abs((float)radius*100);
+		ring.radius = Mathf.Abs((float)radius);
 	}
 }
