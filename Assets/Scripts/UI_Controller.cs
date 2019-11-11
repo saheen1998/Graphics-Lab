@@ -2,14 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
+using SFB;
 
 public class UI_Controller : MonoBehaviour
 {
+    public string pointDataFilePath;
+    public string jointDataFilePath;
     public List<GameObject> cameras;
     public GameObject video;
     public List<GameObject> options;
+    public List<GameObject> penPrefabs;
+    public GameObject inputFields;
 
     private VideoPlayer vidTex;
+    private int constraintInd = 0;
     
     public void ChangeCamera(int index)
     {
@@ -41,8 +47,49 @@ public class UI_Controller : MonoBehaviour
             }
     }
 
+
+    ///////////////////Functions for constraint
+    public void SetConstraint(int ind){
+        constraintInd = ind;
+    }
+
     public void SetConstraintInfo(){
-        
+        if (inputFields.activeSelf){
+            GameObject[] pens = GameObject.FindGameObjectsWithTag("Pen");
+            foreach (GameObject pen in pens)
+            {
+                Destroy(pen);
+            }
+            GameObject[] points = GameObject.FindGameObjectsWithTag("Point");
+            foreach (GameObject pt in points)
+            {
+                Destroy(pt);
+            }
+            GameObject[] constraints = GameObject.FindGameObjectsWithTag("Constraint");
+            foreach (GameObject c in constraints)
+            {
+                Destroy(c);
+            }
+            Instantiate(penPrefabs[constraintInd]);
+            inputFields.SetActive(false);
+            
+            GameObject cam = GameObject.Find("CamConstraint");
+            if(cam != null) cam.GetComponent<CamConstraint>().ResetPos();
+        }else{
+            inputFields.SetActive(true);
+        }
+    }
+
+    public void SetPointDataFile(){
+        try{
+            pointDataFilePath = StandaloneFileBrowser.OpenFilePanel("Open joint data file", "", "csv", false)[0];
+        }catch{}
+    }
+
+    public void SetJointDataFile(){
+        try{
+            pointDataFilePath = StandaloneFileBrowser.OpenFilePanel("Open point data file", "", "csv", false)[0];
+        }catch{}
     }
 
     private void Start() {

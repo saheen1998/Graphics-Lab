@@ -8,12 +8,15 @@ public class ObjectControllerScript : MonoBehaviour
     public Transform table;
     public Slider slider;
 
+    public GameObject txtCol;
+
     public void SetPositions(){
         //table.position = tablePos;
     }
 
     public void ToggleTable(bool stat){
         table.gameObject.SetActive(stat);
+        txtCol.SetActive(false);
     }
 
     public void SetTableHeight(float h) {

@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using System.Windows.Forms;
 
 public class RobotControllerScript : MonoBehaviour
 {
@@ -93,8 +95,11 @@ public class RobotControllerScript : MonoBehaviour
         clip.SetCurve(rPath, typeof(Transform), "localEulerAngles.z", zCurve);
     }
 
-    // Start is called before the first frame update
-    void Start()
+    // public void CreateRobotAnimation(){
+    //     StartCoroutine(IEnumCreateRobotAnimation());
+    // }
+
+    /*IEnumerator IEnum*/public void CreateRobotAnimation()
     {
         trail = tipTranform.GetComponent<TrailRenderer>();
 
@@ -105,20 +110,35 @@ public class RobotControllerScript : MonoBehaviour
         dabClip.legacy = true;
 
         
-		//Get each row from csv data file
-		TextAsset joint_angles = Resources.Load<TextAsset>(dataFileName);
-		if(joint_angles == null){
-			Debug.LogError("RobotControllerScript.cs: Joint data file does not exist or cannot be read!");
+		////////////Get each row from csv data file
+		GameObject UIController = GameObject.Find("UI Controller");
+		StreamReader joint_data;
+        StreamReader temp;
+		try{
+			joint_data = new StreamReader(UIController.GetComponent<UI_Controller>().jointDataFilePath);
+			temp = new StreamReader(UIController.GetComponent<UI_Controller>().jointDataFilePath);
+		}catch{
+			Debug.LogWarning("RobotControllerScript.cs: Joint data file does not exist or cannot be read!");
+			MessageBox.Show("Point data file does not exist or cannot be read!", "Warning!");
 			return;
 		}
-		string[] data = joint_angles.text.Split(new char[] {'\n'} );
-        
-        n_data = data.Length;
-		double[,] d = new double[n_data, 7];
 
-        for(int i = 0; i<n_data-1 ; i++){
-			
-			string[] jointData = data[i].Split(new char[] {','} );
+        //Get number of lines in file
+        int i = 0;
+        string tempdata;
+        do{
+            tempdata = temp.ReadLine();
+            i++;
+        }while(tempdata != null);
+        n_data = i;
+
+        //Read data from joint data file
+		string data;
+		data = joint_data.ReadLine();
+		double[,] d = new double[n_data, 7];
+        i = 0;
+        do{
+			string[] jointData = data.Split(new char[] {','} );
 			d[i,0] = double.Parse(jointData[0]);
 			d[i,1] = double.Parse(jointData[1]);
 			d[i,2] = double.Parse(jointData[2]);
@@ -126,7 +146,9 @@ public class RobotControllerScript : MonoBehaviour
 			d[i,4] = double.Parse(jointData[4]);
 			d[i,5] = double.Parse(jointData[5]);
 			d[i,6] = double.Parse(jointData[6]);
-        }
+            i++;
+			data = joint_data.ReadLine();
+		}while(data != null);
 
         AddAnimBase("base/L0", L0, 0, d, ref clip);
         AddAnim("base/L0/L1", L1, 1, d, ref clip);
@@ -140,6 +162,10 @@ public class RobotControllerScript : MonoBehaviour
         anim.AddClip(dabClip, "dab");
     }
 
+    private void Start() {
+        //CreateRobotAnimation();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -148,26 +174,37 @@ public class RobotControllerScript : MonoBehaviour
         // RotateJoint(L3, -angle3);
         // RotateJoint(L4, angle4);
         // RotateJoint(L5, -angle5);
-        if(anim["regular"].normalizedTime > 0 && anim["regular"].normalizedTime < 0.99f){
-            trail.emitting = true;
-        }
-        else{
-            trail.emitting = false;
-        }
+
+        try{
+            if(anim["regular"].normalizedTime > 0 && anim["regular"].normalizedTime < 0.99f){
+                trail.emitting = true;
+            }
+            else{
+                trail.emitting = false;
+            }
+        }catch{}
     }
 
     public void play()
     {
-        anim.Play("regular");
-        anim["regular"].speed = animationSpeed;
-        anim["regular"].normalizedTime = 0f;
-        trail.Clear();
+        try{
+            anim.Play("regular");
+            anim["regular"].speed = animationSpeed;
+            anim["regular"].normalizedTime = 0f;
+            trail.Clear();
+        }catch{
+            Debug.LogWarning("RobotControllerScript: Joint animation clip not found");
+        }
     }
 
     public void animationScroll(float time)
     {
-        anim.Play("regular");
-        anim["regular"].speed = 0;
-        anim["regular"].normalizedTime = time;
+        try{
+            anim.Play("regular");
+            anim["regular"].speed = 0;
+            anim["regular"].normalizedTime = time;
+        }catch{
+            Debug.LogWarning("RobotControllerScript: Joint animation clip not found");
+        }
     }
 }

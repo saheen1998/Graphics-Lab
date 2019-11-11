@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.IO;
+using System.Windows.Forms;
 
 public class Constraint_axial : MonoBehaviour {
 
@@ -19,33 +21,41 @@ public class Constraint_axial : MonoBehaviour {
 		LineRenderer line = gameObject.GetComponent<LineRenderer>();
 
 		//Get each row from csv data file
-		TextAsset xyz_data = Resources.Load<TextAsset>(dataFileName);
-		if(xyz_data == null){
-			Debug.LogError("Constraint_axial.cs: Point data file does not exist or cannot be read!");
+		GameObject UIController = GameObject.Find("UI Controller");
+		StreamReader xyz_data;
+		try{
+			xyz_data = new StreamReader(UIController.GetComponent<UI_Controller>().pointDataFilePath);
+		}catch{
+			Debug.LogWarning("Constraint_axial.cs: Point data file does not exist or cannot be read!");
+			MessageBox.Show("Point data file does not exist or cannot be read!", "Warning!");
 			return;
 		}
-		string[] data = xyz_data.text.Split(new char[] {'\n'} );
+		//TextAsset xyz_data = Resources.Load<TextAsset>(dataFileName);
+		//string[] data = xyz_data.text.Split(new char[] {'\n'} );
 
 		//Set number of vertices for line
-		line.positionCount = data.Length-1;
-
+		//line.positionCount = data.Length-1;
+		string data;
+		data = xyz_data.ReadLine();
+		line.positionCount = 0;
 		//Plot each point
-		for(int i = 0; i<data.Length-1 ; i++){
-			
-			string[] pointData = data[i].Split(new char[] {','} );
+		do{
+			string[] pointData = data.Split(new char[] {','} );
 			p[0] = double.Parse(pointData[0]);
 			p[1] = double.Parse(pointData[2]);
 			p[2] = double.Parse(pointData[1]);
 			transform.position = new Vector3((float)p[0], (float)p[1], (float)p[2]);
 			var point = Instantiate(pointPrefab, transform.position, Quaternion.identity);
-			point.name = "Point " + (i + 1).ToString();
+			point.name = "Point " + (line.positionCount).ToString();
 
 			//Set a vertex for the line at the point
-			line.SetPosition(i,transform.position);
+			line.SetPosition(line.positionCount++, transform.position);
 
 			//Check if point is on constraint
 			//int resConstraint = Func.check_constraint_axial(wx, wy, wz, dx, dy, dz, radius, p);
-		}
+			
+			data = xyz_data.ReadLine();
+		}while(data != null);
 
 		//Move constraint center to centroid
 		

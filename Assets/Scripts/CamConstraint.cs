@@ -6,10 +6,19 @@ public class CamConstraint : MonoBehaviour
 {
     public Transform cameraOrbit;
     
-	private Vector3 targetCenter = Vector3.zero;
+	private Vector3 targetCenter = new Vector3(1, 0, 0);
 
-    void Start()
+	private void OnEnable() {
+		StartCoroutine(EnumResetPos());
+	}
+
+	public void ResetPos(){
+		StartCoroutine(EnumResetPos());
+	}
+
+    IEnumerator EnumResetPos()
     {
+        yield return new WaitForSeconds(0.05f);
         var objects = GameObject.FindGameObjectsWithTag("Point");
 		if(objects.Length != 0){
 			
@@ -26,7 +35,7 @@ public class CamConstraint : MonoBehaviour
 			targetCenter = bounds.center;
 		} else
 		{
-			Debug.LogWarning("CameraScript5.cs: Points not found!");
+			Debug.LogWarning("CameraScript.cs: Points not found!");
 		}
 
         cameraOrbit.position = targetCenter;
