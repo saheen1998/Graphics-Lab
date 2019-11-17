@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Windows.Forms;
+using System.Linq;
 
 public class RobotControllerScript : MonoBehaviour
 {
@@ -28,11 +29,21 @@ public class RobotControllerScript : MonoBehaviour
     // public float angle5 = 0;
     // public float angle6 = 0;
     
-    private Animation anim;
+    public Animation anim;
+    
     private AnimationClip clip;
     private AnimationClip dabClip;
     private int n_data;
     private TrailRenderer trail;
+
+    private GraphScript gsc;
+    private List<double> d0 = new List<double>();
+    private List<double> d1 = new List<double>();
+    private List<double> d2 = new List<double>();
+    private List<double> d3 = new List<double>();
+    private List<double> d4 = new List<double>();
+    private List<double> d5 = new List<double>();
+    private List<double> d6 = new List<double>();
 
     void RotateJoint(Transform arm, float jointAngle)
     {
@@ -99,9 +110,10 @@ public class RobotControllerScript : MonoBehaviour
     //     StartCoroutine(IEnumCreateRobotAnimation());
     // }
 
-    /*IEnumerator IEnum*/public void CreateRobotAnimation()
+    public void CreateRobotAnimation()
     {
         trail = tipTranform.GetComponent<TrailRenderer>();
+        gsc = GameObject.Find("Graph").GetComponent<GraphScript>();
 
         anim = GetComponent<Animation>();
         clip = new AnimationClip();
@@ -146,6 +158,15 @@ public class RobotControllerScript : MonoBehaviour
 			d[i,4] = double.Parse(jointData[4]);
 			d[i,5] = double.Parse(jointData[5]);
 			d[i,6] = double.Parse(jointData[6]);
+
+            d0.Add(double.Parse(jointData[0]));
+            d1.Add(double.Parse(jointData[1]));
+            d2.Add(double.Parse(jointData[2]));
+            d3.Add(double.Parse(jointData[3]));
+            d4.Add(double.Parse(jointData[4]));
+            d5.Add(double.Parse(jointData[5]));
+            d6.Add(double.Parse(jointData[6]));
+
             i++;
 			data = joint_data.ReadLine();
 		}while(data != null);
@@ -162,8 +183,30 @@ public class RobotControllerScript : MonoBehaviour
         anim.AddClip(dabClip, "dab");
     }
 
-    private void Start() {
-        //CreateRobotAnimation();
+    public void ChangeGraph(int idx){
+        GameObject[] pts = GameObject.FindGameObjectsWithTag("Graph Point");
+        foreach (GameObject pt in pts)
+        {
+            Destroy(pt);
+        }
+        switch (idx)
+        {
+            case 0: gsc.ShowGraph(d0);
+                    break;
+            case 1: gsc.ShowGraph(d1);
+                    break;
+            case 2: gsc.ShowGraph(d2);
+                    break;
+            case 3: gsc.ShowGraph(d3);
+                    break;
+            case 4: gsc.ShowGraph(d4);
+                    break;
+            case 5: gsc.ShowGraph(d5);
+                    break;
+            case 6: gsc.ShowGraph(d6);
+                    break;
+            default:break;
+        }
     }
 
     // Update is called once per frame

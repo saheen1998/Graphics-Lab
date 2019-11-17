@@ -13,6 +13,7 @@ public class UI_Controller : MonoBehaviour
     public List<GameObject> options;
     public List<GameObject> penPrefabs;
     public GameObject inputFields;
+    public GameObject graph;
 
     private VideoPlayer vidTex;
     private int constraintInd = 0;
@@ -36,6 +37,10 @@ public class UI_Controller : MonoBehaviour
         }
     }
 
+    public void ToggleGraph(){
+        graph.SetActive((graph.activeSelf) ? (false) : (true));
+    }
+
     public void PlayVideo(){
         if (vidTex.isPlaying)
             {
@@ -55,19 +60,17 @@ public class UI_Controller : MonoBehaviour
 
     public void SetConstraintInfo(){
         if (inputFields.activeSelf){
+
             GameObject[] pens = GameObject.FindGameObjectsWithTag("Pen");
-            foreach (GameObject pen in pens)
-            {
+            foreach (GameObject pen in pens){
                 Destroy(pen);
             }
             GameObject[] points = GameObject.FindGameObjectsWithTag("Point");
-            foreach (GameObject pt in points)
-            {
+            foreach (GameObject pt in points){
                 Destroy(pt);
             }
             GameObject[] constraints = GameObject.FindGameObjectsWithTag("Constraint");
-            foreach (GameObject c in constraints)
-            {
+            foreach (GameObject c in constraints){
                 Destroy(c);
             }
             Instantiate(penPrefabs[constraintInd]);
@@ -82,13 +85,13 @@ public class UI_Controller : MonoBehaviour
 
     public void SetPointDataFile(){
         try{
-            pointDataFilePath = StandaloneFileBrowser.OpenFilePanel("Open joint data file", "", "csv", false)[0];
+            pointDataFilePath = StandaloneFileBrowser.OpenFilePanel("Open point data file", "", "csv", false)[0];
         }catch{}
     }
 
     public void SetJointDataFile(){
         try{
-            pointDataFilePath = StandaloneFileBrowser.OpenFilePanel("Open point data file", "", "csv", false)[0];
+            jointDataFilePath = StandaloneFileBrowser.OpenFilePanel("Open joint data file", "", "csv", false)[0];
         }catch{}
     }
 

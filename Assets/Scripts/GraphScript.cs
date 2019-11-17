@@ -61,7 +61,6 @@ public class GraphScript : MonoBehaviour
     public void UpdateCurrentState(float val){
         lineRect.anchoredPosition = new Vector2(val * width, 0);
         int idx = (int)Math.Floor(val * (count - 1));
-        Debug.Log(idx);
         try{
             textAngle.text = ((float)angles[idx]).ToString("F6");
         }
