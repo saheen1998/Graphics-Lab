@@ -20,7 +20,7 @@ public class ObjectControllerScript : MonoBehaviour
     }
 
     public void SetTableHeight(float h) {
-        table.position = new Vector3(table.position.x, h - .04f, table.position.z);
-        slider.gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = (table.position.y + 0.04).ToString("F4");
+        table.position = new Vector3(table.position.x, h - 0.04f, table.position.z);
+        slider.gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = (-(-table.position.y - 0.04f - 0.9249f)).ToString("F4");
     }
 }
