@@ -47,7 +47,7 @@ public class Constraint_axial : MonoBehaviour {
 			xyz_data = new StreamReader(UIController.GetComponent<UI_Controller>().pointDataFilePath);
 		}catch{
 			Debug.LogWarning("Constraint_axial.cs: Point data file does not exist or cannot be read!");
-			MessageBox.Show("Point data file does not exist or cannot be read!", "Warning!");
+			MessageBox.Show("Point data file does not exist or cannot be read!", "Error!");
 			return;
 		}
 		//TextAsset xyz_data = Resources.Load<TextAsset>(dataFileName);

@@ -3,7 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Windows.Forms;
 
-public class Constraint_line : MonoBehaviour {
+public class Constraint_prismatic : MonoBehaviour {
 
 	public Transform pointPrefab;
 	public Transform linePrefab;
@@ -27,8 +27,8 @@ public class Constraint_line : MonoBehaviour {
 		try{
 			xyz_data = new StreamReader(UIController.GetComponent<UI_Controller>().pointDataFilePath);
 		}catch{
-			Debug.LogWarning("Constraint_line.cs: Point data file does not exist or cannot be read!");
-			MessageBox.Show("Point data file does not exist or cannot be read!", "Warning!");
+			Debug.LogWarning("Constraint_prismatic.cs: Point data file does not exist or cannot be read!");
+			MessageBox.Show("Point data file does not exist or cannot be read!", "Error!");
 			return;
 		}
 
@@ -67,8 +67,8 @@ public class Constraint_line : MonoBehaviour {
 
 		//Move plane center to centroid
 		if(n == 0){
-			Debug.LogWarning("Constraint_plane.cs: Constraint cannot be placed!");
-			MessageBox.Show("Constraint cannot be placed!", "Warning!");
+			Debug.LogWarning("Constraint_prismatic.cs: Prismatic constraint cannot be placed!");
+			MessageBox.Show("Prismatic constraint cannot be placed!", "Warning!");
 			return;
 		}
 		cent[0]/=n;

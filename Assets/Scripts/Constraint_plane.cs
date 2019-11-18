@@ -30,7 +30,7 @@ public class Constraint_plane : MonoBehaviour {
 			xyz_data = new StreamReader(UIController.GetComponent<UI_Controller>().pointDataFilePath);
 		}catch{
 			Debug.LogWarning("Constraint_plane.cs: Point data file does not exist or cannot be read!");
-			MessageBox.Show("Point data file does not exist or cannot be read!", "Warning!");
+			MessageBox.Show("Point data file does not exist or cannot be read!", "Error!");
 			return;
 		}
 
@@ -65,8 +65,8 @@ public class Constraint_plane : MonoBehaviour {
 
 		//Move plane center to centroid
 		if(n == 0){
-			Debug.LogWarning("Constraint_plane.cs: Constraint cannot be placed!");
-			MessageBox.Show("Constraint cannot be placed!", "Warning!");
+			Debug.LogWarning("Constraint_plane.cs: Planar constraint cannot be placed!");
+			MessageBox.Show("Planar constraint cannot be placed!", "Warning!");
 			return;
 		}
 		cent[0]/=n;

@@ -5,12 +5,12 @@ using UnityEngine;
 public class ScriptCollision : MonoBehaviour
 {
 
-    public GameObject text;
+    public GameObject collisionAlert;
     private void OnTriggerStay(Collider other) {
-        text.SetActive(true);
+        collisionAlert.SetActive(true);
     }
 
     private void OnTriggerExit(Collider other) {
-        text.SetActive(false);
+        collisionAlert.SetActive(false);
     }
 }

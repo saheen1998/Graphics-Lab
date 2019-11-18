@@ -7,8 +7,8 @@ using UnityEngine.UI;
 public class GraphScript : MonoBehaviour
 {
     public Text textAngle;
-    [SerializeField] private Sprite ptSprite;
-    [SerializeField] private Sprite lineSprite;
+    public Sprite ptSprite;
+    public Sprite lineSprite;
     private RectTransform graphContainer;
 
     private float height;
@@ -62,7 +62,7 @@ public class GraphScript : MonoBehaviour
         lineRect.anchoredPosition = new Vector2(val * width, 0);
         int idx = (int)Math.Floor(val * (count - 1));
         try{
-            textAngle.text = ((float)angles[idx]).ToString("F6");
+            textAngle.text = ((float)angles[idx]).ToString("F6") + " radians";
         }
         catch{}
     }
