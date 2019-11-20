@@ -98,10 +98,4 @@ public class UI_Controller : MonoBehaviour
     private void Start() {
         vidTex = video.GetComponent<VideoPlayer>();
     }
-
-    /*private void Update() {
-        if (video.activeSelf){
-            Debug.Log(vidTex.frame);
-        }
-    }*/
 }
