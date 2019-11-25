@@ -18,6 +18,7 @@ public class GraphScript : MonoBehaviour
 
     private List<double> angles;
     private int count;
+    private bool radians = true;
 
     private void Awake() {
         graphContainer = transform.Find("Graph Container").GetComponent<RectTransform>();
@@ -62,8 +63,16 @@ public class GraphScript : MonoBehaviour
         lineRect.anchoredPosition = new Vector2(val * width, 0);
         int idx = (int)Math.Floor(val * (count - 1));
         try{
-            textAngle.text = ((float)angles[idx]).ToString("F6") + " radians";
+            if (radians)
+                textAngle.text = ((float)angles[idx]).ToString("F6") + " radians";
+            else
+                textAngle.text = ((float)angles[idx] * 180 / Math.PI).ToString("F4") + " degrees";
         }
         catch{}
+    }
+
+    public void ChangeAngleUnit(){
+        radians = radians ? false : true;
+        UpdateCurrentState(0);
     }
 }

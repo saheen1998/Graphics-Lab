@@ -8,12 +8,15 @@ public class UI_Controller : MonoBehaviour
 {
     public string pointDataFilePath;
     public string jointDataFilePath;
+    public string forceDemoFilePath;
+    public string forcePlayFilePath;
     public List<GameObject> cameras;
     public GameObject video;
     public List<GameObject> options;
     public List<GameObject> penPrefabs;
     public GameObject inputFields;
     public GameObject graph;
+    public GameObject forceGraph;
 
     private VideoPlayer vidTex;
     private int constraintInd = 0;
@@ -39,6 +42,12 @@ public class UI_Controller : MonoBehaviour
 
     public void ToggleGraph(){
         graph.SetActive((graph.activeSelf) ? (false) : (true));
+        forceGraph.SetActive(false);
+    }
+
+    public void ToggleForceGraph(){
+        graph.SetActive(false);
+        forceGraph.SetActive((forceGraph.activeSelf) ? (false) : (true));
     }
 
     public void PlayVideo(){
@@ -92,6 +101,18 @@ public class UI_Controller : MonoBehaviour
     public void SetJointDataFile(){
         try{
             jointDataFilePath = StandaloneFileBrowser.OpenFilePanel("Open joint data file", "", "csv", false)[0];
+        }catch{}
+    }
+    
+    public void SetForceDFile(){
+        try{
+            forceDemoFilePath = StandaloneFileBrowser.OpenFilePanel("Open demo force data file", "", "csv", false)[0];
+        }catch{}
+    }
+    
+    public void SetForcePFile(){
+        try{
+            forcePlayFilePath = StandaloneFileBrowser.OpenFilePanel("Open playback force data file", "", "csv", false)[0];
         }catch{}
     }
 

@@ -15,6 +15,7 @@ public class RobotControllerScript : MonoBehaviour
     public Transform tipTranform;
 
     public GameObject graph;
+    public GameObject forceGraph;
 
     public Transform L0;
     public Transform L1;
@@ -47,6 +48,7 @@ public class RobotControllerScript : MonoBehaviour
     private TrailRenderer trail;
 
     private GraphScript gsc;
+    private ForceGraphScript Fgsc;
     private List<double> d0;
     private List<double> d1;
     private List<double> d2;
@@ -54,6 +56,8 @@ public class RobotControllerScript : MonoBehaviour
     private List<double> d4;
     private List<double> d5;
     private List<double> d6;
+
+    private GameObject gripper;
 
     void RotateJoint(Transform arm, float jointAngle)
     {
@@ -121,6 +125,7 @@ public class RobotControllerScript : MonoBehaviour
     {
         trail = tipTranform.GetComponent<TrailRenderer>();
         gsc = graph.GetComponent<GraphScript>();
+        Fgsc = forceGraph.GetComponent<ForceGraphScript>();
 
         d0 = new List<double>();
         d1 = new List<double>();
@@ -153,6 +158,7 @@ public class RobotControllerScript : MonoBehaviour
         
         string tempdata;
 
+        //Check if there are 7 joint angle value columns in the file
         tempdata = temp.ReadLine();
         string[] tempstr = tempdata.Split(new char[] {','} );
         if(tempstr.Length != 7){
@@ -230,6 +236,9 @@ public class RobotControllerScript : MonoBehaviour
         }
     }
 
+    void Start(){
+        gripper = GameObject.Find("Gripper");
+    }
     // Update is called once per frame
     void Update()
     {
@@ -240,8 +249,10 @@ public class RobotControllerScript : MonoBehaviour
         // RotateJoint(L5, -angle5);
 
         try{
-            if(anim.IsPlaying("regular"))
+            if(anim.IsPlaying("regular")){
                 gsc.UpdateCurrentState(anim["regular"].normalizedTime);
+                Fgsc.UpdateCurrentState(anim["regular"].normalizedTime);
+            }
             if(anim["regular"].normalizedTime > 0.02 && anim["regular"].normalizedTime < 0.98f){
                 trail.emitting = true;
             }
@@ -254,12 +265,18 @@ public class RobotControllerScript : MonoBehaviour
         try{
             if(anim["regular"].normalizedTime > tMoveStop)
                 textDesc.text = "Movement ended";
-            else if(anim["regular"].normalizedTime > tOpenGripper)
+            else if(anim["regular"].normalizedTime > tOpenGripper){
                 textDesc.text = "Opening gripper";
-            else if(anim["regular"].normalizedTime > tCloseGripper)
+                gripper.GetComponent<GripperScript>().Open();
+            }
+            else if(anim["regular"].normalizedTime > tCloseGripper){
                 textDesc.text = "Closing gripper";
-            else if(anim["regular"].normalizedTime > tInteractDemo)
+                gripper.GetComponent<GripperScript>().Close();
+            }
+            else if(anim["regular"].normalizedTime > tInteractDemo){
                 textDesc.text = "Interacting with Demo";
+                gripper.GetComponent<GripperScript>().Open();
+            }
             else if(anim["regular"].normalizedTime > tMoveStart)
                 textDesc.text = "Movement Started";
             else textDesc.text = "";
@@ -276,7 +293,7 @@ public class RobotControllerScript : MonoBehaviour
             anim["regular"].normalizedTime = 0f;
             trail.Clear();
         }catch{
-            Debug.LogWarning("RobotControllerScript: Joint animation clip not found");
+            //Debug.LogWarning("RobotControllerScript: Joint animation clip not found");
         }
     }
 
