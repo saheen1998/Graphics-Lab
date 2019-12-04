@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using System.IO;
 using System.Windows.Forms;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class RobotControllerScript : MonoBehaviour
 {
@@ -24,13 +25,15 @@ public class RobotControllerScript : MonoBehaviour
     public Transform L4;
     public Transform L5;
     public Transform L6;
+    
+    public GameObject video;
 
     public Text textDesc;
-    public float tMoveStart = 0.15f;
-    public float tInteractDemo = 0.5f;
-    public float tCloseGripper = 0.6f;
-    public float tOpenGripper = 0.7f;
-    public float tMoveStop = 0.9f;
+    public double tSafeComplPos = 0.15f;
+    public double tSafeComplReplay1 = 0.5f;
+    public double tConstraint = 0.6f;
+    public double tSafeComplReplay2 = 0.7f;
+    public double tEnd = 0.9f;
 
     // public float angle0 = 0;
     // public float angle1 = 0;
@@ -46,6 +49,7 @@ public class RobotControllerScript : MonoBehaviour
     private AnimationClip dabClip;
     private int n_data;
     private TrailRenderer trail;
+    private ForwardKinematics FKscr;
 
     private GraphScript gsc;
     private ForceGraphScript Fgsc;
@@ -58,13 +62,14 @@ public class RobotControllerScript : MonoBehaviour
     private List<double> d6;
 
     private GameObject gripper;
+    private VideoPlayer vidTex;
 
     void RotateJoint(Transform arm, float jointAngle)
     {
         arm.localRotation = Quaternion.Euler(arm.localEulerAngles.x, jointAngle, arm.localEulerAngles.z);
     }
 
-    void AddAnim(string rPath, Transform arm, int armNo, List<double> d, ref AnimationClip clip)
+    void AddAnim(string rPath, Transform arm, List<double> d, ref AnimationClip clip)
     {
         AnimationCurve xCurve;
         AnimationCurve yCurve;
@@ -79,10 +84,7 @@ public class RobotControllerScript : MonoBehaviour
         for (int i=0; i<n_data; i++)
         {
             xKeys[i] = new Keyframe(i*keyMultiplier, arm.localEulerAngles.x);
-            if (armNo == 2 || armNo == 4)
-                yKeys[i] = new Keyframe(i*keyMultiplier, (float)d[i]*180/Mathf.PI);
-            else
-                yKeys[i] = new Keyframe(i*keyMultiplier, -(float)d[i]*180/Mathf.PI);
+            yKeys[i] = new Keyframe(i*keyMultiplier, (float)d[i]*180/Mathf.PI);
             zKeys[i] = new Keyframe(i*keyMultiplier, arm.localEulerAngles.z);
         }
 
@@ -110,7 +112,7 @@ public class RobotControllerScript : MonoBehaviour
         {
             xKeys[i] = new Keyframe((float)i*keyMultiplier, arm.localEulerAngles.x);
             yKeys[i] = new Keyframe((float)i*keyMultiplier, arm.localEulerAngles.y);
-            zKeys[i] = new Keyframe((float)i*keyMultiplier, -(float)d[i]*180/Mathf.PI);
+            zKeys[i] = new Keyframe((float)i*keyMultiplier, (float)d[i]*180/Mathf.PI);
         }
 
         xCurve = new AnimationCurve(xKeys);
@@ -124,6 +126,7 @@ public class RobotControllerScript : MonoBehaviour
     public void CreateRobotAnimation()
     {
         trail = tipTranform.GetComponent<TrailRenderer>();
+		LineRenderer line = gameObject.GetComponent<LineRenderer>();
         gsc = graph.GetComponent<GraphScript>();
         Fgsc = forceGraph.GetComponent<ForceGraphScript>();
 
@@ -160,7 +163,7 @@ public class RobotControllerScript : MonoBehaviour
 
         //Check if there are 7 joint angle value columns in the file
         tempdata = temp.ReadLine();
-        string[] tempstr = tempdata.Split(new char[] {','} );
+        string[] tempstr = tempdata.Split(new char[] {' '} );
         if(tempstr.Length != 7){
             Debug.LogWarning("Not a joint data file with 7 joint data points for angles!"); //ERROR
 			MessageBox.Show("Not a joint data file with 7 joint data points for angles!", "Error!");
@@ -179,28 +182,32 @@ public class RobotControllerScript : MonoBehaviour
 		string data;
 		data = joint_data.ReadLine();
         i = 0;
+		line.positionCount = 0;
         do{
-			string[] jointData = data.Split(new char[] {','} );
+			string[] jointData = data.Split(new char[] {' '} );
 
-            d0.Add(double.Parse(jointData[0]));
-            d1.Add(double.Parse(jointData[1]));
+            d0.Add(-double.Parse(jointData[0]));
+            d1.Add(-double.Parse(jointData[1]));
             d2.Add(double.Parse(jointData[2]));
-            d3.Add(double.Parse(jointData[3]));
+            d3.Add(-double.Parse(jointData[3]));
             d4.Add(double.Parse(jointData[4]));
-            d5.Add(double.Parse(jointData[5]));
+            d5.Add(-double.Parse(jointData[5]));
             d6.Add(double.Parse(jointData[6]));
+
+            List<float> ang = new List<float>(){ -(float)d0[i], (float)d1[i], (float)d2[i], -(float)d3[i], (float)d4[i], -(float)d5[i], (float)d6[i]};
+			line.SetPosition(line.positionCount++, FKscr.GetPoint(ang));
 
             i++;
 			data = joint_data.ReadLine();
 		}while(data != null);
 
         AddAnimBase("base/L0", L0, d0, ref clip);
-        AddAnim("base/L0/L1", L1, 1, d1, ref clip);
-        AddAnim("base/L0/L1/Body/L2", L2, 2, d2, ref clip);
-        AddAnim("base/L0/L1/Body/L2/Body/L3", L3, 3, d3, ref clip);
-        AddAnim("base/L0/L1/Body/L2/Body/L3/Body/L4", L4, 4, d4, ref clip);
-        AddAnim("base/L0/L1/Body/L2/Body/L3/Body/L4/Body/L5", L5, 5, d5, ref clip);
-        AddAnim("base/L0/L1/Body/L2/Body/L3/Body/L4/Body/L5/Body/L6", L6, 6, d6, ref clip);
+        AddAnim("base/L0/L1", L1, d1, ref clip);
+        AddAnim("base/L0/L1/Body/L2", L2, d2, ref clip);
+        AddAnim("base/L0/L1/Body/L2/Body/L3", L3, d3, ref clip);
+        AddAnim("base/L0/L1/Body/L2/Body/L3/Body/L4", L4, d4, ref clip);
+        AddAnim("base/L0/L1/Body/L2/Body/L3/Body/L4/Body/L5", L5, d5, ref clip);
+        AddAnim("base/L0/L1/Body/L2/Body/L3/Body/L4/Body/L5/Body/L6", L6, d6, ref clip);
 
         anim.AddClip(clip, "regular");
         anim.AddClip(dabClip, "dab");
@@ -238,6 +245,18 @@ public class RobotControllerScript : MonoBehaviour
 
     void Start(){
         gripper = GameObject.Find("Gripper");
+        vidTex = video.GetComponent<VideoPlayer>();
+        FKscr = gameObject.GetComponent<ForwardKinematics>();
+
+        //Set normalized times for descriptor
+        tEnd = tEnd - tSafeComplPos;
+        tSafeComplReplay1 = (tSafeComplReplay1 - tSafeComplPos) / tEnd;
+        tConstraint = (tConstraint - tSafeComplPos) / tEnd;
+        tSafeComplReplay2 = (tSafeComplReplay2 - tSafeComplPos) / tEnd;
+        tSafeComplPos = 0;
+        tEnd = 0.99f;
+        
+        vidTex.time = (long)(tSafeComplReplay1 * vidTex.length);
     }
     // Update is called once per frame
     void Update()
@@ -248,38 +267,45 @@ public class RobotControllerScript : MonoBehaviour
         // RotateJoint(L4, angle4);
         // RotateJoint(L5, -angle5);
 
+        //Time align video
+        if(anim["regular"].normalizedTime > tSafeComplReplay1){
+            var fr = anim["regular"].normalizedTime * vidTex.frameCount;
+            vidTex.frame = (long)fr;
+            Debug.Log(fr);
+        }
+
         try{
             if(anim.IsPlaying("regular")){
                 gsc.UpdateCurrentState(anim["regular"].normalizedTime);
                 Fgsc.UpdateCurrentState(anim["regular"].normalizedTime);
-            }
+            }/*
             if(anim["regular"].normalizedTime > 0.02 && anim["regular"].normalizedTime < 0.98f){
                 trail.emitting = true;
             }
             else{
                 trail.emitting = false;
-            }
+            }*/
         }catch{}
 
         //Descriptor
         try{
-            if(anim["regular"].normalizedTime > tMoveStop)
-                textDesc.text = "Movement ended";
-            else if(anim["regular"].normalizedTime > tOpenGripper){
-                textDesc.text = "Opening gripper";
+            /*if(anim["regular"].normalizedTime > tEnd)
+                textDesc.text = "Replay end";
+            else */if(anim["regular"].normalizedTime > tSafeComplReplay2){
+                textDesc.text = "Safe Compliant replay 2";
                 gripper.GetComponent<GripperScript>().Open();
             }
-            else if(anim["regular"].normalizedTime > tCloseGripper){
-                textDesc.text = "Closing gripper";
+            else if(anim["regular"].normalizedTime > tConstraint){
+                textDesc.text = "Interacting with constraint";
                 gripper.GetComponent<GripperScript>().Close();
             }
-            else if(anim["regular"].normalizedTime > tInteractDemo){
-                textDesc.text = "Interacting with Demo";
+            else if(anim["regular"].normalizedTime > tSafeComplReplay1){
+                textDesc.text = "Safe compliant replay 1";
                 gripper.GetComponent<GripperScript>().Open();
             }
-            else if(anim["regular"].normalizedTime > tMoveStart)
-                textDesc.text = "Movement Started";
-            else textDesc.text = "";
+            else if(anim["regular"].normalizedTime > tSafeComplPos)
+                textDesc.text = "Safe compliant positioning";
+            else textDesc.text = "Replay end";
         }catch{}
 
 
@@ -305,14 +331,15 @@ public class RobotControllerScript : MonoBehaviour
         textAnimSpeed.text = spd.ToString("F1");
     }
 
-    public void animationScroll(float time)
+    public void animationScroll(float t)
     {
         try{
             anim.Play("regular");
             anim["regular"].speed = 0;
-            anim["regular"].normalizedTime = time;
+            anim["regular"].normalizedTime = t;
+
         }catch{
-            Debug.LogWarning("RobotControllerScript: Joint animation clip not found");
+            Debug.LogWarning("RobotControllerScript: Joint animation clip not found!");
         }
     }
 }

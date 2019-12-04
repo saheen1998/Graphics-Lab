@@ -61,6 +61,10 @@ public class UI_Controller : MonoBehaviour
             }
     }
 
+    public void BrowseVideo(){
+        vidTex.time = 0.5f * vidTex.length;
+    }
+
 
     ///////////////////Functions for constraint
     public void SetConstraint(int ind){

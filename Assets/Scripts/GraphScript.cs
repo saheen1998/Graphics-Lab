@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -51,6 +52,7 @@ public class GraphScript : MonoBehaviour
     public void ShowGraph(List<double> val){
         angles = new List<double>(val);
         count = val.Count;
+        ymax = 2.1f * Math.Max( Math.Abs((float)val.Max()), Math.Abs((float)val.Min()) );
         for (int i = 0; i < count; i++)
         {
             float xPos =  ((float)(i) / (count-1)) * width;

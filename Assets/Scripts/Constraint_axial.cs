@@ -7,7 +7,6 @@ public class Constraint_axial : MonoBehaviour {
 
 	public Transform pointPrefab;
 	public GameObject torusPrefab;
-	public string dataFileName;
 
 	public double wx, wy, wz, dx, dy, dz, radius;
 
@@ -59,13 +58,13 @@ public class Constraint_axial : MonoBehaviour {
 		line.positionCount = 0;
 		//Plot each point
 		do{
-			string[] pointData = data.Split(new char[] {','} );
+			string[] pointData = data.Split(new char[] {' '} );
 			p[0] = double.Parse(pointData[0]);
 			p[1] = double.Parse(pointData[2]);
 			p[2] = double.Parse(pointData[1]);
 			transform.position = new Vector3((float)p[0], (float)p[1], (float)p[2]);
-			var point = Instantiate(pointPrefab, transform.position, Quaternion.identity);
-			point.name = "Point " + (line.positionCount).ToString();
+			/*var point = Instantiate(pointPrefab, transform.position, Quaternion.identity);
+			point.name = "Point " + (line.positionCount).ToString();*/
 
 			//Set a vertex for the line at the point
 			line.SetPosition(line.positionCount++, transform.position);

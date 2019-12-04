@@ -55,7 +55,7 @@ public class ForceGraphScript : MonoBehaviour
     public void ShowGraph(List<double> val){
         forces = new List<double>(val);
         count = val.Count;
-        ymax = 2 * Math.Max( Math.Abs((float)val.Max()), Math.Abs((float)val.Min()) );
+        ymax = 2.1f * Math.Max( Math.Abs((float)val.Max()), Math.Abs((float)val.Min()) );
         for (int i = 0; i < count; i++)
         {
             float xPos =  ((float)(i) / (count-1)) * width;
@@ -91,9 +91,9 @@ public class ForceGraphScript : MonoBehaviour
 		data = forceD_data.ReadLine();
         int i = 0;
         do{
-			string[] FData = data.Split(new char[] {','} );
+			string[] FData = data.Split(new char[] {' '} );
 
-            forcesD.Add(double.Parse(FData[1]));
+            forcesD.Add(double.Parse(FData[0]));
 
             i++;
 			data = forceD_data.ReadLine();
@@ -119,9 +119,9 @@ public class ForceGraphScript : MonoBehaviour
 		data = forceP_data.ReadLine();
         int i = 0;
         do{
-			string[] PData = data.Split(new char[] {','} );
+			string[] PData = data.Split(new char[] {' '} );
 
-            forcesP.Add(double.Parse(PData[1]));
+            forcesP.Add(double.Parse(PData[0]));
 
             i++;
 			data = forceP_data.ReadLine();

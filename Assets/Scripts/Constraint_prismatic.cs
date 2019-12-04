@@ -43,8 +43,8 @@ public class Constraint_prismatic : MonoBehaviour {
 			p[1] = double.Parse(pointData[2]);
 			p[2] = double.Parse(pointData[1]);
 			transform.position = new Vector3((float)p[0], (float)p[1], (float)p[2]);
-			var point = Instantiate(pointPrefab, transform.position, Quaternion.identity);
-			point.name = "Point " + (line.positionCount + 1).ToString();
+			/*var point = Instantiate(pointPrefab, transform.position, Quaternion.identity);
+			point.name = "Point " + (line.positionCount + 1).ToString();*/
 
 			//Set a vertex for the line at the point
 			line.SetPosition(line.positionCount++, transform.position);
