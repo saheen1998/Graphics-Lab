@@ -4,33 +4,18 @@ using UnityEngine;
 
 public class ForwardKinematics : MonoBehaviour
 {
-    public List<double> l = new List<double>();
-    public List<double> a = new List<double>();
-
-    private List<double> x = new List<double>(){0, 0, 0, 0, 0, 0, 0};
-    private List<double> y = new List<double>(){0, 0, 0, 0, 0, 0, 0};
-    private List<double> z = new List<double>(){0, 0, 0, 0, 0, 0, 0};
-    private double xf;
-    private double yf;
-    private double zf;
+    public List<Transform> arm;
 
     public Vector3 GetPoint(List<float> ang){
-        Vector3 pos;
 
-        double diag;
-        float diagAng = Mathf.Atan2((float)l[1], (float)l[0]);
-        ang[0] = ang[0];// + diagAng;
-        diag = l[1] / Mathf.Sin(diagAng);
+        arm[0].localRotation = Quaternion.Euler(0, ang[0] * Mathf.Rad2Deg, 0);
+        arm[1].localRotation = Quaternion.Euler(0, 0, ang[1] * Mathf.Rad2Deg);
+        arm[2].localRotation = Quaternion.Euler(-ang[2] * Mathf.Rad2Deg, 0, 0);
+        arm[3].localRotation = Quaternion.Euler(0, 0, ang[3] * Mathf.Rad2Deg);
+        arm[4].localRotation = Quaternion.Euler(-ang[4] * Mathf.Rad2Deg, 0, 0);
+        arm[5].localRotation = Quaternion.Euler(0, 0, ang[5] * Mathf.Rad2Deg);
+        arm[6].localRotation = Quaternion.Euler(ang[6] * Mathf.Rad2Deg, 0, 0);
 
-        x[0] = diag * Mathf.Cos(ang[0] + diagAng);
-        y[0] = 0.325f;
-        z[0] = diag * Mathf.Sin(ang[0] + diagAng);
-
-        x[1] = x[0] + l[2] * Mathf.Cos(ang[1]);
-        y[1] = y[0] + l[2] * Mathf.Sin(ang[1]);
-        z[1] = z[0] + l[2] * Mathf.Sin(ang[0]);
-
-        pos = new Vector3((float)x[1], (float)y[1], (float)z[1]);
-        return pos;
+        return arm[7].transform.position;
     }
 }

@@ -9,7 +9,7 @@ public class Constraint_prismatic : MonoBehaviour {
 	public Transform linePrefab;
 	public string dataFileName;
 
-	public double wx, wy, wz, dx, dy, dz;
+	private double wx, wy, wz, dx, dy, dz;
 	
 
 	// Use this for initialization
@@ -20,9 +20,41 @@ public class Constraint_prismatic : MonoBehaviour {
 		int n = 0;
 
 		LineRenderer line = gameObject.GetComponent<LineRenderer>();
-
-		//Get each row from csv data file
 		GameObject UIController = GameObject.Find("UI Controller");
+		string data;
+
+		//Get Constraint Information
+		UI_Controller UIscr = UIController.GetComponent<UI_Controller>();
+		if(UIscr.toBrowse){
+			StreamReader constraint_data;
+			try{
+				constraint_data = new StreamReader(UIController.GetComponent<UI_Controller>().constraintDataFilePath);
+				data = constraint_data.ReadLine();
+				string[] consData = data.Split(new char[] {','} );
+				wx = double.Parse(consData[0]);
+				wy = double.Parse(consData[1]);
+				wz = double.Parse(consData[2]);
+				dx = double.Parse(consData[3]);
+				dy = double.Parse(consData[4]);
+				dz = double.Parse(consData[5]);
+			}catch{
+				Debug.LogWarning("Constraint_prismatic.cs: Constraint data file does not exist or cannot be read!");
+				MessageBox.Show("Constraint data file does not exist or cannot be read!", "Error!");
+				return;
+			}
+		}else{
+			try{
+				wx = double.Parse(UIscr.info[0].text);
+				wy = double.Parse(UIscr.info[1].text);
+				wz = double.Parse(UIscr.info[2].text);
+				dx = double.Parse(UIscr.info[3].text);
+				dy = double.Parse(UIscr.info[4].text);
+				dz = double.Parse(UIscr.info[5].text);
+			}catch{
+				Debug.LogWarning("Constraint_prismatic.cs: Constraint input data is null or not in the correct format!");
+			}
+		}
+
 		StreamReader xyz_data;
 		try{
 			xyz_data = new StreamReader(UIController.GetComponent<UI_Controller>().pointDataFilePath);
@@ -32,7 +64,6 @@ public class Constraint_prismatic : MonoBehaviour {
 			return;
 		}
 
-		string data;
 		data = xyz_data.ReadLine();
 		line.positionCount = 0;
 		//Plot each point
@@ -43,8 +74,8 @@ public class Constraint_prismatic : MonoBehaviour {
 			p[1] = double.Parse(pointData[2]);
 			p[2] = double.Parse(pointData[1]);
 			transform.position = new Vector3((float)p[0], (float)p[1], (float)p[2]);
-			/*var point = Instantiate(pointPrefab, transform.position, Quaternion.identity);
-			point.name = "Point " + (line.positionCount + 1).ToString();*/
+			var point = Instantiate(pointPrefab, transform.position, Quaternion.identity);
+			point.name = "Point " + (line.positionCount + 1).ToString();
 
 			//Set a vertex for the line at the point
 			line.SetPosition(line.positionCount++, transform.position);

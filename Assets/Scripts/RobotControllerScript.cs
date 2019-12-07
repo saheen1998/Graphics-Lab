@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using SFB;
 
 public class RobotControllerScript : MonoBehaviour
 {
@@ -29,11 +30,6 @@ public class RobotControllerScript : MonoBehaviour
     public GameObject video;
 
     public Text textDesc;
-    public double tSafeComplPos = 0.15f;
-    public double tSafeComplReplay1 = 0.5f;
-    public double tConstraint = 0.6f;
-    public double tSafeComplReplay2 = 0.7f;
-    public double tEnd = 0.9f;
 
     // public float angle0 = 0;
     // public float angle1 = 0;
@@ -60,6 +56,12 @@ public class RobotControllerScript : MonoBehaviour
     private List<double> d4;
     private List<double> d5;
     private List<double> d6;
+    
+    private double tSafeComplPos = 2;
+    private double tSafeComplReplay1 = 2;
+    private double tConstraint = 2;
+    private double tSafeComplReplay2 = 2;
+    private double tEnd = 2;
 
     private GameObject gripper;
     private VideoPlayer vidTex;
@@ -163,7 +165,7 @@ public class RobotControllerScript : MonoBehaviour
 
         //Check if there are 7 joint angle value columns in the file
         tempdata = temp.ReadLine();
-        string[] tempstr = tempdata.Split(new char[] {' '} );
+        string[] tempstr = tempdata.Split(new char[] {','} );
         if(tempstr.Length != 7){
             Debug.LogWarning("Not a joint data file with 7 joint data points for angles!"); //ERROR
 			MessageBox.Show("Not a joint data file with 7 joint data points for angles!", "Error!");
@@ -184,7 +186,7 @@ public class RobotControllerScript : MonoBehaviour
         i = 0;
 		line.positionCount = 0;
         do{
-			string[] jointData = data.Split(new char[] {' '} );
+			string[] jointData = data.Split(new char[] {','} );
 
             d0.Add(-double.Parse(jointData[0]));
             d1.Add(-double.Parse(jointData[1]));
@@ -194,7 +196,7 @@ public class RobotControllerScript : MonoBehaviour
             d5.Add(-double.Parse(jointData[5]));
             d6.Add(double.Parse(jointData[6]));
 
-            List<float> ang = new List<float>(){ -(float)d0[i], (float)d1[i], (float)d2[i], -(float)d3[i], (float)d4[i], -(float)d5[i], (float)d6[i]};
+            List<float> ang = new List<float>(){ (float)d0[i], (float)d1[i], (float)d2[i], (float)d3[i], (float)d4[i], (float)d5[i], (float)d6[i]};
 			line.SetPosition(line.positionCount++, FKscr.GetPoint(ang));
 
             i++;
@@ -247,14 +249,6 @@ public class RobotControllerScript : MonoBehaviour
         gripper = GameObject.Find("Gripper");
         vidTex = video.GetComponent<VideoPlayer>();
         FKscr = gameObject.GetComponent<ForwardKinematics>();
-
-        //Set normalized times for descriptor
-        tEnd = tEnd - tSafeComplPos;
-        tSafeComplReplay1 = (tSafeComplReplay1 - tSafeComplPos) / tEnd;
-        tConstraint = (tConstraint - tSafeComplPos) / tEnd;
-        tSafeComplReplay2 = (tSafeComplReplay2 - tSafeComplPos) / tEnd;
-        tSafeComplPos = 0;
-        tEnd = 0.99f;
         
         vidTex.time = (long)(tSafeComplReplay1 * vidTex.length);
     }
@@ -309,6 +303,42 @@ public class RobotControllerScript : MonoBehaviour
         }catch{}
 
 
+    }
+
+    public void BrowseTimestampFile(){
+
+        string timestampFilePath;
+
+        try{
+            timestampFilePath = StandaloneFileBrowser.OpenFilePanel("Open timestamp data file", "", "csv", false)[0];
+        }catch{
+            return;
+        }
+
+        StreamReader time_data;
+        string data;
+        try{
+            time_data = new StreamReader(timestampFilePath);
+            data = time_data.ReadLine();
+            string[] tData = data.Split(new char[] {','} );
+            tSafeComplPos = double.Parse(tData[0]);
+            tSafeComplReplay1 = double.Parse(tData[1]);
+            tConstraint = double.Parse(tData[2]);
+            tSafeComplReplay2 = double.Parse(tData[3]);
+            tEnd = double.Parse(tData[4]);
+        }catch{
+            Debug.LogWarning("RobotControllerScript.cs: Timestamp data file does not exist or cannot be read!");
+            MessageBox.Show("Timestamp data file does not exist or cannot be read!", "Error!");
+            return;
+        }
+        
+        //Set normalized times for descriptor
+        tEnd = tEnd - tSafeComplPos;
+        tSafeComplReplay1 = (tSafeComplReplay1 - tSafeComplPos) / tEnd;
+        tConstraint = (tConstraint - tSafeComplPos) / tEnd;
+        tSafeComplReplay2 = (tSafeComplReplay2 - tSafeComplPos) / tEnd;
+        tSafeComplPos = 0;
+        tEnd = 0.99f;
     }
 
     public void play()

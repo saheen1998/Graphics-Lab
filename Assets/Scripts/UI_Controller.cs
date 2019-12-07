@@ -2,19 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
+using UnityEngine.UI;
 using SFB;
 
 public class UI_Controller : MonoBehaviour
 {
+    public GameObject menu;
     public string pointDataFilePath;
     public string jointDataFilePath;
     public string forceDemoFilePath;
     public string forcePlayFilePath;
+    public string constraintDataFilePath;
     public List<GameObject> cameras;
     public GameObject video;
     public List<GameObject> options;
     public List<GameObject> penPrefabs;
     public GameObject inputFields;
+    public List<Text> info;
+    public bool toBrowse;
     public GameObject graph;
     public GameObject forceGraph;
 
@@ -49,6 +54,10 @@ public class UI_Controller : MonoBehaviour
         graph.SetActive(false);
         forceGraph.SetActive((forceGraph.activeSelf) ? (false) : (true));
     }
+    
+    public void ToggleMenu(){
+        menu.SetActive((menu.activeSelf) ? (false) : (true));
+    }
 
     public void PlayVideo(){
         if (vidTex.isPlaying)
@@ -74,6 +83,9 @@ public class UI_Controller : MonoBehaviour
     public void SetConstraintInfo(){
         if (inputFields.activeSelf){
 
+            toBrowse = false;
+
+            //Destroy previous constraint game objects
             GameObject[] pens = GameObject.FindGameObjectsWithTag("Pen");
             foreach (GameObject pen in pens){
                 Destroy(pen);
@@ -86,7 +98,9 @@ public class UI_Controller : MonoBehaviour
             foreach (GameObject c in constraints){
                 Destroy(c);
             }
+
             Instantiate(penPrefabs[constraintInd]);
+
             inputFields.SetActive(false);
             
             GameObject cam = GameObject.Find("CamConstraint");
@@ -94,6 +108,32 @@ public class UI_Controller : MonoBehaviour
         }else{
             inputFields.SetActive(true);
         }
+    }
+
+    public void browseConstraintInfoFile(){
+        try{
+            constraintDataFilePath = StandaloneFileBrowser.OpenFilePanel("Open constraint information data file", "", "csv", false)[0];
+            toBrowse = true;
+
+            //Destroy previous constraint game objects
+            GameObject[] pens = GameObject.FindGameObjectsWithTag("Pen");
+            foreach (GameObject pen in pens){
+                Destroy(pen);
+            }
+            GameObject[] points = GameObject.FindGameObjectsWithTag("Point");
+            foreach (GameObject pt in points){
+                Destroy(pt);
+            }
+            GameObject[] constraints = GameObject.FindGameObjectsWithTag("Constraint");
+            foreach (GameObject c in constraints){
+                Destroy(c);
+            }
+
+            Instantiate(penPrefabs[constraintInd]);
+            
+            GameObject cam = GameObject.Find("CamConstraint");
+            if(cam != null) cam.GetComponent<CamConstraint>().ResetPos();
+        }catch{}
     }
 
     public void SetPointDataFile(){
@@ -110,13 +150,13 @@ public class UI_Controller : MonoBehaviour
     
     public void SetForceDFile(){
         try{
-            forceDemoFilePath = StandaloneFileBrowser.OpenFilePanel("Open demo force data file", "", "csv", false)[0];
+            forceDemoFilePath = StandaloneFileBrowser.OpenFilePanel("Open demonstration tong force data file", "", "csv", false)[0];
         }catch{}
     }
     
     public void SetForcePFile(){
         try{
-            forcePlayFilePath = StandaloneFileBrowser.OpenFilePanel("Open playback force data file", "", "csv", false)[0];
+            forcePlayFilePath = StandaloneFileBrowser.OpenFilePanel("Open playback gripper force data file", "", "csv", false)[0];
         }catch{}
     }
 
