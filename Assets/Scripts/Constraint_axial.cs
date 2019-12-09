@@ -25,7 +25,7 @@ public class Constraint_axial : MonoBehaviour {
 		if(UIscr.toBrowse){
 			StreamReader constraint_data;
 			try{
-				constraint_data = new StreamReader(UIController.GetComponent<UI_Controller>().constraintDataFilePath);
+				constraint_data = new StreamReader(UIscr.constraintDataFilePath);
 				data = constraint_data.ReadLine();
 				string[] consData = data.Split(new char[] {','} );
 				wx = double.Parse(consData[0]);
@@ -36,8 +36,8 @@ public class Constraint_axial : MonoBehaviour {
 				dz = double.Parse(consData[5]);
 				radius = double.Parse(consData[6]);
 			}catch{
-				Debug.LogWarning("Constraint_axial.cs: Constraint data file does not exist or cannot be read!");
-				MessageBox.Show("Constraint data file does not exist or cannot be read!", "Error!");
+				Debug.LogWarning(gameObject.name + " - Constraint_axial.cs: Constraint data file cannot be read or does not exist!");
+				MessageBox.Show("Constraint data file cannot be read or does not exist!", "Error!");
 				return;
 			}
 		}else{
@@ -50,18 +50,20 @@ public class Constraint_axial : MonoBehaviour {
 				dz = double.Parse(UIscr.info[5].text);
 				radius = double.Parse(UIscr.info[6].text);
 			}catch{
-				Debug.LogWarning("Constraint_axial.cs: Constraint input data is null or not in the correct format!");
+				Debug.LogWarning(gameObject.name + " - Constraint_axial.cs: Constraint input data is null or not in the correct format!");
 			}
 		}
 
 		StreamReader xyz_data;
 		try{
-			xyz_data = new StreamReader(UIController.GetComponent<UI_Controller>().pointDataFilePath);
+			xyz_data = new StreamReader(UIscr.pointDataFilePath);
 		}catch{
-			Debug.LogWarning("Constraint_axial.cs: Point data file does not exist or cannot be read!");
-			MessageBox.Show("Point data file does not exist or cannot be read!", "Error!");
+			Debug.LogWarning(gameObject.name + " - Constraint_axial.cs: Point data file cannot be read or does not exist!");
+			MessageBox.Show("Point data file cannot be read or does not exist!", "Error!");
 			return;
 		}
+
+		UIscr.AddConstriantInfo(wx, wy, wz, dx, dy, dz, radius, "Axial");
 		//TextAsset xyz_data = Resources.Load<TextAsset>(dataFileName);
 		//string[] data = xyz_data.text.Split(new char[] {'\n'} );
 
@@ -76,7 +78,7 @@ public class Constraint_axial : MonoBehaviour {
 			p[2] = double.Parse(pointData[1]);
 			transform.position = new Vector3((float)p[0], (float)p[1], (float)p[2]);
 			var point = Instantiate(pointPrefab, transform.position, Quaternion.identity);
-			point.name = "Point " + (line.positionCount).ToString();
+			point.name = "Point " + UIscr.selectedConsIdx.ToString();
 
 			//Set a vertex for the line at the point
 			line.SetPosition(line.positionCount++, transform.position);
@@ -99,7 +101,8 @@ public class Constraint_axial : MonoBehaviour {
 		Quaternion rot = new Quaternion(qx, qy, qz, qw);
 		GameObject obj_axialTorus;
 		Vector3 center = new Vector3((float)dx, (float)dz, (float)dy);
-		obj_axialTorus = (GameObject)Instantiate(torusPrefab, center, rot);
+		obj_axialTorus = /*(GameObject)*/Instantiate(torusPrefab, center, rot);
+		obj_axialTorus.name = "Constraint " + UIscr.selectedConsIdx.ToString();
 		ParticleSystem.ShapeModule ring = obj_axialTorus.transform.GetChild(0).gameObject.GetComponent<ParticleSystem>().shape;
 		ring.radius = Mathf.Abs((float)radius);
 	}

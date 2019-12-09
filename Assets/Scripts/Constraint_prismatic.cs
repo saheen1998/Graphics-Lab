@@ -6,7 +6,7 @@ using System.Windows.Forms;
 public class Constraint_prismatic : MonoBehaviour {
 
 	public Transform pointPrefab;
-	public Transform linePrefab;
+	public GameObject linePrefab;
 	public string dataFileName;
 
 	private double wx, wy, wz, dx, dy, dz;
@@ -28,7 +28,7 @@ public class Constraint_prismatic : MonoBehaviour {
 		if(UIscr.toBrowse){
 			StreamReader constraint_data;
 			try{
-				constraint_data = new StreamReader(UIController.GetComponent<UI_Controller>().constraintDataFilePath);
+				constraint_data = new StreamReader(UIscr.constraintDataFilePath);
 				data = constraint_data.ReadLine();
 				string[] consData = data.Split(new char[] {','} );
 				wx = double.Parse(consData[0]);
@@ -38,8 +38,8 @@ public class Constraint_prismatic : MonoBehaviour {
 				dy = double.Parse(consData[4]);
 				dz = double.Parse(consData[5]);
 			}catch{
-				Debug.LogWarning("Constraint_prismatic.cs: Constraint data file does not exist or cannot be read!");
-				MessageBox.Show("Constraint data file does not exist or cannot be read!", "Error!");
+				Debug.LogWarning(gameObject.name + " - Constraint_prismatic.cs: Constraint data file cannot be read or does not exist!");
+				MessageBox.Show("Constraint data file cannot be read or does not exist!", "Error!");
 				return;
 			}
 		}else{
@@ -51,18 +51,20 @@ public class Constraint_prismatic : MonoBehaviour {
 				dy = double.Parse(UIscr.info[4].text);
 				dz = double.Parse(UIscr.info[5].text);
 			}catch{
-				Debug.LogWarning("Constraint_prismatic.cs: Constraint input data is null or not in the correct format!");
+				Debug.LogWarning(gameObject.name + " - Constraint_prismatic.cs: Constraint input data is null or not in the correct format!");
 			}
 		}
 
 		StreamReader xyz_data;
 		try{
-			xyz_data = new StreamReader(UIController.GetComponent<UI_Controller>().pointDataFilePath);
+			xyz_data = new StreamReader(UIscr.pointDataFilePath);
 		}catch{
-			Debug.LogWarning("Constraint_prismatic.cs: Point data file does not exist or cannot be read!");
-			MessageBox.Show("Point data file does not exist or cannot be read!", "Error!");
+			Debug.LogWarning(gameObject.name + " - Constraint_prismatic.cs: Point data file cannot be read or does not exist!");
+			MessageBox.Show("Point data file cannot be read or does not exist!", "Error!");
 			return;
 		}
+		
+		UIscr.AddConstriantInfo(wx, wy, wz, dx, dy, dz, 0, "Prismatic");
 
 		data = xyz_data.ReadLine();
 		line.positionCount = 0;
@@ -75,7 +77,7 @@ public class Constraint_prismatic : MonoBehaviour {
 			p[2] = double.Parse(pointData[1]);
 			transform.position = new Vector3((float)p[0], (float)p[1], (float)p[2]);
 			var point = Instantiate(pointPrefab, transform.position, Quaternion.identity);
-			point.name = "Point " + (line.positionCount + 1).ToString();
+			point.name = "Point " + (UIscr.selectedConsIdx).ToString();
 
 			//Set a vertex for the line at the point
 			line.SetPosition(line.positionCount++, transform.position);
@@ -98,10 +100,11 @@ public class Constraint_prismatic : MonoBehaviour {
 
 		//Move plane center to centroid
 		if(n == 0){
-			Debug.LogWarning("Constraint_prismatic.cs: Prismatic constraint cannot be placed!");
-			MessageBox.Show("Prismatic constraint cannot be placed!", "Warning!");
+			Debug.LogWarning(gameObject.name + " - Constraint_prismatic.cs: Prismatic constraint cannot be placed using current constraint data!");
+			MessageBox.Show("Prismatic constraint cannot be placed using current constraint data!", "Warning!");
 			return;
 		}
+
 		cent[0]/=n;
 		cent[1]/=n;
 		cent[2]/=n;
@@ -114,6 +117,7 @@ public class Constraint_prismatic : MonoBehaviour {
 		Func.matToQ(ew, ref qx, ref qy, ref qz, ref qw);
 
 		Quaternion rot = new Quaternion(qx, qy, qz, qw);
-		Instantiate(linePrefab, new Vector3((float)cent[0], (float)cent[1], (float)cent[2]), rot);
+		GameObject prismatic = Instantiate(linePrefab, new Vector3((float)cent[0], (float)cent[1], (float)cent[2]), rot);
+		prismatic.name = "Constraint " + UIscr.selectedConsIdx.ToString();
 	}
 }

@@ -3,27 +3,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.UI;
+using TMPro;
 using SFB;
 
 public class UI_Controller : MonoBehaviour
 {
     public GameObject menu;
-    public string pointDataFilePath;
-    public string jointDataFilePath;
-    public string forceDemoFilePath;
-    public string forcePlayFilePath;
-    public string constraintDataFilePath;
     public List<GameObject> cameras;
     public GameObject video;
     public List<GameObject> options;
     public List<GameObject> penPrefabs;
     public GameObject inputFields;
-    public List<Text> info;
-    public bool toBrowse;
+    public List<InputField> info;
+    public GameObject constraintList;
     public GameObject graph;
     public GameObject forceGraph;
+    public List<TMP_InputField> CamPos;
+    public Material matNormal;
+    public Material matSelected;
+
+    //Used inside scripts only
+    [HideInInspector] public bool toBrowse;
+    [HideInInspector] public List<double> wx;
+    [HideInInspector] public List<double> wy;
+    [HideInInspector] public List<double> wz;
+    [HideInInspector] public List<double> dx;
+    [HideInInspector] public List<double> dy;
+    [HideInInspector] public List<double> dz;
+    [HideInInspector] public List<double> rad;
+
+    public double demoSafeRep1;
+    public double demoConstraint;
+    public double demoSafeRep2;
+    public double demoEnd;
+    [HideInInspector] public string pointDataFilePath;
+    [HideInInspector] public string jointDataFilePath;
+    [HideInInspector] public string forceDemoFilePath;
+    [HideInInspector] public string forcePlayFilePath;
+    [HideInInspector] public string constraintDataFilePath;
 
     private VideoPlayer vidTex;
+    private Dropdown dropdownConstraintList;
+    [HideInInspector] public int selectedConsIdx = 0;
     private int constraintInd = 0;
     
     public void ChangeCamera(int index)
@@ -71,7 +92,11 @@ public class UI_Controller : MonoBehaviour
     }
 
     public void BrowseVideo(){
-        vidTex.time = 0.5f * vidTex.length;
+        demoEnd -= demoSafeRep1;
+        demoConstraint = (demoConstraint - demoSafeRep1);
+        demoSafeRep2 -= (demoSafeRep2 - demoSafeRep1);
+
+        vidTex.time = demoConstraint;
     }
 
 
@@ -80,34 +105,86 @@ public class UI_Controller : MonoBehaviour
         constraintInd = ind;
     }
 
-    public void SetConstraintInfo(){
-        if (inputFields.activeSelf){
+    public void AddConstriantInfo(double w1, double w2, double w3, double d1, double d2, double d3, double r, string cons){
 
-            toBrowse = false;
+        wx.Add(w1);
+        wy.Add(w2);
+        wz.Add(w3);
+        dx.Add(d1);
+        dy.Add(d2);
+        dz.Add(d3);
+        rad.Add(r);
 
-            //Destroy previous constraint game objects
-            GameObject[] pens = GameObject.FindGameObjectsWithTag("Pen");
-            foreach (GameObject pen in pens){
-                Destroy(pen);
-            }
-            GameObject[] points = GameObject.FindGameObjectsWithTag("Point");
-            foreach (GameObject pt in points){
+        Dropdown.OptionData opt = new Dropdown.OptionData();
+        opt.text = (dropdownConstraintList.options.Count + 1).ToString() + ". " + cons;
+        dropdownConstraintList.options.Add(opt);
+        selectedConsIdx = dropdownConstraintList.options.Count - 1;
+        dropdownConstraintList.value = selectedConsIdx + 1;
+    }
+
+    public void SelectConstraint(int idx){
+
+        info[0].text = wx[idx].ToString();
+        info[1].text = wy[idx].ToString();
+        info[2].text = wz[idx].ToString();
+        info[3].text = dx[idx].ToString();
+        info[4].text = dy[idx].ToString();
+        info[5].text = dz[idx].ToString();
+        info[6].text = rad[idx].ToString();
+        selectedConsIdx = idx;
+
+        //Change color to indicate selected constraint
+        /*GameObject[] constraints = GameObject.FindGameObjectsWithTag("Constraint");
+        foreach (GameObject c in constraints)
+        {
+            if(c.name == ("Constraint " + selectedConsIdx))
+                c.GetComponent<MeshRenderer>().material = matSelected;
+            else
+                c.GetComponent<MeshRenderer>().material = matNormal;
+        }*/
+    }
+
+    public void RemoveConstraint(){
+        string cText = dropdownConstraintList.options[dropdownConstraintList.value].text;
+        string[] cNum = cText.Split(new char[] {'.'} );
+        selectedConsIdx = int.Parse(cNum[0]) - 1;
+        Destroy(GameObject.Find("Pen " + selectedConsIdx));
+        Destroy(GameObject.Find("Constraint " + selectedConsIdx));
+        GameObject[] points = GameObject.FindGameObjectsWithTag("Point");
+        foreach (GameObject pt in points){
+            if(pt.name == "Point " + selectedConsIdx)
                 Destroy(pt);
-            }
-            GameObject[] constraints = GameObject.FindGameObjectsWithTag("Constraint");
-            foreach (GameObject c in constraints){
-                Destroy(c);
-            }
-
-            Instantiate(penPrefabs[constraintInd]);
-
-            inputFields.SetActive(false);
-            
-            GameObject cam = GameObject.Find("CamConstraint");
-            if(cam != null) cam.GetComponent<CamConstraint>().ResetPos();
-        }else{
-            inputFields.SetActive(true);
         }
+
+        wx.RemoveAt(dropdownConstraintList.value);
+        wy.RemoveAt(dropdownConstraintList.value);
+        wz.RemoveAt(dropdownConstraintList.value);
+        dx.RemoveAt(dropdownConstraintList.value);
+        dy.RemoveAt(dropdownConstraintList.value);
+        dz.RemoveAt(dropdownConstraintList.value);
+        rad.RemoveAt(dropdownConstraintList.value);
+
+        dropdownConstraintList.options.RemoveAt(dropdownConstraintList.value);
+        if(dropdownConstraintList.options.Count <= 0)
+            constraintList.transform.GetChild(0).GetComponent<Text>().text = "";
+        else
+            dropdownConstraintList.value = dropdownConstraintList.options.Count - 1;
+    }
+
+    public void ToggleConstraintInfo(){
+        inputFields.SetActive((inputFields.activeSelf) ? (false) : (true));
+    }
+
+    public void AddConstraint(){
+
+        toBrowse = false;
+
+        selectedConsIdx = dropdownConstraintList.options.Count;
+        GameObject pen = Instantiate(penPrefabs[constraintInd]);
+        pen.name = "Pen " + (selectedConsIdx).ToString();
+        
+        GameObject cam = GameObject.Find("CamConstraint");
+        if(cam != null) cam.GetComponent<CamConstraint>().ResetPos();
     }
 
     public void browseConstraintInfoFile(){
@@ -115,26 +192,20 @@ public class UI_Controller : MonoBehaviour
             constraintDataFilePath = StandaloneFileBrowser.OpenFilePanel("Open constraint information data file", "", "csv", false)[0];
             toBrowse = true;
 
-            //Destroy previous constraint game objects
-            GameObject[] pens = GameObject.FindGameObjectsWithTag("Pen");
-            foreach (GameObject pen in pens){
-                Destroy(pen);
-            }
-            GameObject[] points = GameObject.FindGameObjectsWithTag("Point");
-            foreach (GameObject pt in points){
-                Destroy(pt);
-            }
-            GameObject[] constraints = GameObject.FindGameObjectsWithTag("Constraint");
-            foreach (GameObject c in constraints){
-                Destroy(c);
-            }
+            selectedConsIdx = dropdownConstraintList.options.Count;
 
-            Instantiate(penPrefabs[constraintInd]);
+            GameObject pen = Instantiate(penPrefabs[constraintInd]);
+            pen.name = "Pen " + (selectedConsIdx).ToString();
             
             GameObject cam = GameObject.Find("CamConstraint");
             if(cam != null) cam.GetComponent<CamConstraint>().ResetPos();
         }catch{}
     }
+
+    public void ShowConstraintList(){
+        constraintList.SetActive((constraintList.activeSelf) ? (false) : (true));
+    }
+    ///////////////////////////////////
 
     public void SetPointDataFile(){
         try{
@@ -160,7 +231,13 @@ public class UI_Controller : MonoBehaviour
         }catch{}
     }
 
+    public void SetCamPos(){
+        cameras[2].transform.position = new Vector3((float)double.Parse(CamPos[0].text), (float)double.Parse(CamPos[2].text), (float)double.Parse(CamPos[1].text));
+        cameras[2].transform.LookAt(GameObject.Find("Tip").GetComponent<Transform>().position);
+    }
+
     private void Start() {
         vidTex = video.GetComponent<VideoPlayer>();
+        dropdownConstraintList = constraintList.GetComponent<Dropdown>();
     }
 }

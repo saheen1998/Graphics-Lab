@@ -155,8 +155,8 @@ public class RobotControllerScript : MonoBehaviour
 			joint_data = new StreamReader(UIController.GetComponent<UI_Controller>().jointDataFilePath);
 			temp = new StreamReader(UIController.GetComponent<UI_Controller>().jointDataFilePath);
 		}catch{
-			Debug.LogWarning("RobotControllerScript.cs: Joint data file does not exist or cannot be read!");    //ERROR
-			MessageBox.Show("Joint data file does not exist or cannot be read!", "Error!");
+			Debug.LogWarning(gameObject.name + " - RobotControllerScript.cs: Joint data file cannot be read or does not exist!");    //ERROR
+			MessageBox.Show("Joint data file cannot be read or does not exist!", "Error!");
 			return;
 		}
 
@@ -167,7 +167,7 @@ public class RobotControllerScript : MonoBehaviour
         tempdata = temp.ReadLine();
         string[] tempstr = tempdata.Split(new char[] {','} );
         if(tempstr.Length != 7){
-            Debug.LogWarning("Not a joint data file with 7 joint data points for angles!"); //ERROR
+            Debug.LogWarning(gameObject.name + " - RobotControllerScript.cs: Not a joint data file with 7 joint data points for angles!"); //ERROR
 			MessageBox.Show("Not a joint data file with 7 joint data points for angles!", "Error!");
             return;
         }
@@ -241,7 +241,7 @@ public class RobotControllerScript : MonoBehaviour
                 default:break;
             }
         }catch{
-            Debug.LogWarning("RobotControllerScript: Cannot show graph or joint data file not loaded");
+            Debug.LogWarning(gameObject.name + " - RobotControllerScript: Cannot show graph or joint data file not loaded");
         }
     }
 
@@ -262,11 +262,11 @@ public class RobotControllerScript : MonoBehaviour
         // RotateJoint(L5, -angle5);
 
         //Time align video
-        if(anim["regular"].normalizedTime > tSafeComplReplay1){
+        /*if(anim["regular"].normalizedTime > tSafeComplReplay1){
             var fr = anim["regular"].normalizedTime * vidTex.frameCount;
             vidTex.frame = (long)fr;
             Debug.Log(fr);
-        }
+        }*/
 
         try{
             if(anim.IsPlaying("regular")){
@@ -327,8 +327,8 @@ public class RobotControllerScript : MonoBehaviour
             tSafeComplReplay2 = double.Parse(tData[3]);
             tEnd = double.Parse(tData[4]);
         }catch{
-            Debug.LogWarning("RobotControllerScript.cs: Timestamp data file does not exist or cannot be read!");
-            MessageBox.Show("Timestamp data file does not exist or cannot be read!", "Error!");
+            Debug.LogWarning(gameObject.name + " - RobotControllerScript.cs: Timestamp data file cannot be read or does not exist!");
+            MessageBox.Show("Timestamp data file cannot be read or does not exist!", "Error!");
             return;
         }
         
@@ -369,7 +369,7 @@ public class RobotControllerScript : MonoBehaviour
             anim["regular"].normalizedTime = t;
 
         }catch{
-            Debug.LogWarning("RobotControllerScript: Joint animation clip not found!");
+            Debug.LogWarning(gameObject.name + " - RobotControllerScript: Joint animation clip not found!");
         }
     }
 }

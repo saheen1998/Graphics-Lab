@@ -81,7 +81,7 @@ public class ForceGraphScript : MonoBehaviour
 		try{
 			forceD_data = new StreamReader(UIController.GetComponent<UI_Controller>().forceDemoFilePath);
 		}catch{
-			Debug.LogWarning("ForceGraphScript.cs: Demo force data file does not exist or cannot be read!");    //ERROR
+			Debug.LogWarning(gameObject.name + " - ForceGraphScript.cs: Demo force data file does not exist or cannot be read!");    //ERROR
 			MessageBox.Show("Demo force data file does not exist or cannot be read!", "Error!");
 			return;
 		}
@@ -109,7 +109,7 @@ public class ForceGraphScript : MonoBehaviour
 		try{
 			forceP_data = new StreamReader(UIController.GetComponent<UI_Controller>().forcePlayFilePath);
 		}catch{
-			Debug.LogWarning("ForceGraphScript.cs: Playback force data file does not exist or cannot be read!");    //ERROR
+			Debug.LogWarning(gameObject.name + " - ForceGraphScript.cs: Playback force data file does not exist or cannot be read!");    //ERROR
 			MessageBox.Show("Playback force data file does not exist or cannot be read!", "Error!");
 			return;
 		}
@@ -144,7 +144,7 @@ public class ForceGraphScript : MonoBehaviour
                 default: break;
             }
         }catch{
-            Debug.LogWarning("ForceGraphScript.cs: Cannot display force graph or both force data files not loaded!");
+            Debug.LogWarning(gameObject.name + " - ForceGraphScript.cs: Cannot display force graph or both force data files not loaded!");
         }
     }
 }
