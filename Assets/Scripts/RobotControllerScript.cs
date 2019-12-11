@@ -31,6 +31,9 @@ public class RobotControllerScript : MonoBehaviour
 
     public Text textDesc;
 
+    public Material mat_interact;
+    public Material mat_normal;
+
     // public float angle0 = 0;
     // public float angle1 = 0;
     // public float angle2 = 0;
@@ -39,7 +42,7 @@ public class RobotControllerScript : MonoBehaviour
     // public float angle5 = 0;
     // public float angle6 = 0;
     
-    public Animation anim;
+    [HideInInspector] public Animation anim;
     
     private AnimationClip clip;
     private AnimationClip dabClip;
@@ -65,6 +68,8 @@ public class RobotControllerScript : MonoBehaviour
 
     private GameObject gripper;
     private VideoPlayer vidTex;
+    private LineRenderer line;
+    private Renderer rend;
 
     void RotateJoint(Transform arm, float jointAngle)
     {
@@ -128,7 +133,7 @@ public class RobotControllerScript : MonoBehaviour
     public void CreateRobotAnimation()
     {
         trail = tipTranform.GetComponent<TrailRenderer>();
-		LineRenderer line = gameObject.GetComponent<LineRenderer>();
+		line = gameObject.GetComponent<LineRenderer>();
         gsc = graph.GetComponent<GraphScript>();
         Fgsc = forceGraph.GetComponent<ForceGraphScript>();
 
@@ -249,6 +254,7 @@ public class RobotControllerScript : MonoBehaviour
         gripper = GameObject.Find("Gripper");
         vidTex = video.GetComponent<VideoPlayer>();
         FKscr = gameObject.GetComponent<ForwardKinematics>();
+        rend = gameObject.GetComponent<Renderer>();
         
         vidTex.time = (long)(tSafeComplReplay1 * vidTex.length);
     }
@@ -287,18 +293,23 @@ public class RobotControllerScript : MonoBehaviour
                 textDesc.text = "Replay end";
             else */if(anim["regular"].normalizedTime > tSafeComplReplay2){
                 textDesc.text = "Safe Compliant replay 2";
+                if(rend.material != mat_normal) rend.material = mat_normal;
                 gripper.GetComponent<GripperScript>().Open();
             }
             else if(anim["regular"].normalizedTime > tConstraint){
                 textDesc.text = "Interacting with constraint";
+                if(rend.material != mat_interact) rend.material = mat_interact;
                 gripper.GetComponent<GripperScript>().Close();
             }
             else if(anim["regular"].normalizedTime > tSafeComplReplay1){
                 textDesc.text = "Safe compliant replay 1";
+                if(rend.material != mat_normal) rend.material = mat_normal;
                 gripper.GetComponent<GripperScript>().Open();
             }
-            else if(anim["regular"].normalizedTime > tSafeComplPos)
+            else if(anim["regular"].normalizedTime > tSafeComplPos){
                 textDesc.text = "Safe compliant positioning";
+                if(rend.material != mat_normal) rend.material = mat_normal;
+            }
             else textDesc.text = "Replay end";
         }catch{}
 

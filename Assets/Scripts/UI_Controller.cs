@@ -8,6 +8,7 @@ using SFB;
 
 public class UI_Controller : MonoBehaviour
 {
+    public CanvasScaler canvas;
     public GameObject menu;
     public List<GameObject> cameras;
     public GameObject video;
@@ -46,6 +47,7 @@ public class UI_Controller : MonoBehaviour
     private Dropdown dropdownConstraintList;
     [HideInInspector] public int selectedConsIdx = 0;
     private int constraintInd = 0;
+    private bool canMoveVideo = false;
     
     public void ChangeCamera(int index)
     {
@@ -54,9 +56,6 @@ public class UI_Controller : MonoBehaviour
             cam.SetActive(false);
         }
         cameras[index].SetActive(true);
-
-        if (index == 2) video.SetActive(true);
-        else video.SetActive(false);
     }
 
     public void ToggleOptions(){
@@ -79,6 +78,10 @@ public class UI_Controller : MonoBehaviour
     public void ToggleMenu(){
         menu.SetActive((menu.activeSelf) ? (false) : (true));
     }
+    
+    public void ToggleVideo(){
+        video.SetActive((video.activeSelf) ? (false) : (true));
+    }
 
     public void PlayVideo(){
         if (vidTex.isPlaying)
@@ -99,6 +102,9 @@ public class UI_Controller : MonoBehaviour
         vidTex.time = demoConstraint;
     }
 
+    public void MoveVideo(){
+        canMoveVideo = canMoveVideo? false : true;
+    }
 
     ///////////////////Functions for constraint
     public void SetConstraint(int ind){
@@ -239,5 +245,13 @@ public class UI_Controller : MonoBehaviour
     private void Start() {
         vidTex = video.GetComponent<VideoPlayer>();
         dropdownConstraintList = constraintList.GetComponent<Dropdown>();
+    }
+
+    void LateUpdate(){
+        if(canMoveVideo){
+            
+            Vector3 pos = Input.mousePosition;
+            video.transform.position = pos;
+        }
     }
 }
