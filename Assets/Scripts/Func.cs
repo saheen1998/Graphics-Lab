@@ -18,7 +18,7 @@ public class Func : MonoBehaviour {
 		
         double[,] c = new double[m, q];
 		if(n != p) {
-            Debug.Log("Func.cs: Matrix multiplication not possible");
+            LogHandler.Logger.Log("Func.cs: Matrix multiplication not possible", LogType.Error);
          } else {
             for (int i = 0; i < m; i++)
                for (int j = 0; j < q; j++) {

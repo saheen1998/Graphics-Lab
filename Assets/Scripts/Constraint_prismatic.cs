@@ -38,7 +38,7 @@ public class Constraint_prismatic : MonoBehaviour {
 				dy = double.Parse(consData[4]);
 				dz = double.Parse(consData[5]);
 			}catch{
-				Debug.LogWarning(gameObject.name + " - Constraint_prismatic.cs: Constraint data file cannot be read or does not exist!");
+           		LogHandler.Logger.Log(gameObject.name + " - Constraint_prismatic.cs: Constraint data file cannot be read or does not exist!", LogType.Warning);
 				MessageBox.Show("Constraint data file cannot be read or does not exist!", "Error!");
 				return;
 			}
@@ -51,7 +51,7 @@ public class Constraint_prismatic : MonoBehaviour {
 				dy = double.Parse(UIscr.info[4].text);
 				dz = double.Parse(UIscr.info[5].text);
 			}catch{
-				Debug.LogWarning(gameObject.name + " - Constraint_prismatic.cs: Constraint input data is null or not in the correct format!");
+           		LogHandler.Logger.Log(gameObject.name + " - Constraint_prismatic.cs: Constraint input data is null or not in the correct format!", LogType.Warning);
 			}
 		}
 
@@ -59,7 +59,7 @@ public class Constraint_prismatic : MonoBehaviour {
 		try{
 			xyz_data = new StreamReader(UIscr.pointDataFilePath);
 		}catch{
-			Debug.LogWarning(gameObject.name + " - Constraint_prismatic.cs: Point data file cannot be read or does not exist!");
+           	LogHandler.Logger.Log(gameObject.name + " - Constraint_prismatic.cs: Point data file cannot be read or does not exist!", LogType.Warning);
 			MessageBox.Show("Point data file cannot be read or does not exist!", "Error!");
 			return;
 		}
@@ -100,7 +100,7 @@ public class Constraint_prismatic : MonoBehaviour {
 
 		//Move plane center to centroid
 		if(n == 0){
-			Debug.LogWarning(gameObject.name + " - Constraint_prismatic.cs: Prismatic constraint cannot be placed using current constraint data!");
+           	LogHandler.Logger.Log(gameObject.name + " - Constraint_prismatic.cs: Prismatic constraint cannot be placed using current constraint data!", LogType.Warning);
 			MessageBox.Show("Prismatic constraint cannot be placed using current constraint data!", "Warning!");
 			return;
 		}

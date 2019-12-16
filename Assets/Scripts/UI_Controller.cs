@@ -94,7 +94,7 @@ public class UI_Controller : MonoBehaviour
                     vidPlayer.Play();
                 }
         }catch{
-            Debug.LogWarning("UI_Controller.cs: Error in playing video or video file not uploaded!");
+            LogHandler.Logger.Log("UI_Controller.cs: Error in playing video or video file not uploaded!", LogType.Error);
         }
     }
 
@@ -103,7 +103,7 @@ public class UI_Controller : MonoBehaviour
             videoFilePath = StandaloneFileBrowser.OpenFilePanel("Open video data file", "", "", false)[0];
             vidPlayer.url = videoFilePath;
         }catch{
-            Debug.LogWarning("UI_Controller.cs: Error in opening video file or operation cancelled!");
+            LogHandler.Logger.Log("UI_Controller.cs: Error in opening video file or operation cancelled!", LogType.Warning);
             return;
         }
         vidPlayer.frame = 1;

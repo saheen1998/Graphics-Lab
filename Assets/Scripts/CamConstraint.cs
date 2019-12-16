@@ -35,7 +35,7 @@ public class CamConstraint : MonoBehaviour
 			targetCenter = bounds.center;
 		} else
 		{
-			Debug.LogWarning("CameraScript.cs: Points not found!");
+            LogHandler.Logger.Log(gameObject.name + " - CamConstraint.cs: Points not found!", LogType.Warning);
 		}
 
         cameraOrbit.position = targetCenter;

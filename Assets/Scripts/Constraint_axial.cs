@@ -36,7 +36,7 @@ public class Constraint_axial : MonoBehaviour {
 				dz = double.Parse(consData[5]);
 				radius = double.Parse(consData[6]);
 			}catch{
-				Debug.LogWarning(gameObject.name + " - Constraint_axial.cs: Constraint data file cannot be read or does not exist!");
+            	LogHandler.Logger.Log(gameObject.name + " - Constraint_axial.cs: Constraint data file cannot be read or does not exist!", LogType.Warning);
 				MessageBox.Show("Constraint data file cannot be read or does not exist!", "Error!");
 				return;
 			}
@@ -50,7 +50,7 @@ public class Constraint_axial : MonoBehaviour {
 				dz = double.Parse(UIscr.info[5].text);
 				radius = double.Parse(UIscr.info[6].text);
 			}catch{
-				Debug.LogWarning(gameObject.name + " - Constraint_axial.cs: Constraint input data is null or not in the correct format!");
+            	LogHandler.Logger.Log(gameObject.name + " - Constraint_axial.cs: Constraint input data is null or not in the correct format!", LogType.Warning);
 			}
 		}
 
@@ -58,7 +58,7 @@ public class Constraint_axial : MonoBehaviour {
 		try{
 			xyz_data = new StreamReader(UIscr.pointDataFilePath);
 		}catch{
-			Debug.LogWarning(gameObject.name + " - Constraint_axial.cs: Point data file cannot be read or does not exist!");
+            LogHandler.Logger.Log(gameObject.name + " - Constraint_axial.cs: Point data file cannot be read or does not exist!", LogType.Warning);
 			MessageBox.Show("Point data file cannot be read or does not exist!", "Error!");
 			return;
 		}
