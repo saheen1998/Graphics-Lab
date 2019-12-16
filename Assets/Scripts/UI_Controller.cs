@@ -12,6 +12,7 @@ public class UI_Controller : MonoBehaviour
     public GameObject menu;
     public List<GameObject> cameras;
     public GameObject video;
+    public Slider videoSlider;
     public List<GameObject> options;
     public List<GameObject> penPrefabs;
     public GameObject inputFields;
@@ -42,8 +43,9 @@ public class UI_Controller : MonoBehaviour
     [HideInInspector] public string forceDemoFilePath;
     [HideInInspector] public string forcePlayFilePath;
     [HideInInspector] public string constraintDataFilePath;
+    [HideInInspector] public string videoFilePath;
 
-    private VideoPlayer vidTex;
+    private VideoPlayer vidPlayer;
     private Dropdown dropdownConstraintList;
     [HideInInspector] public int selectedConsIdx = 0;
     private int constraintInd = 0;
@@ -84,22 +86,32 @@ public class UI_Controller : MonoBehaviour
     }
 
     public void PlayVideo(){
-        if (vidTex.isPlaying)
-            {
-                vidTex.Pause();
-            }
-            else
-            {
-                vidTex.Play();
-            }
+        try{
+            if (vidPlayer.isPlaying){
+                    vidPlayer.Pause();
+                }
+            else{
+                    vidPlayer.Play();
+                }
+        }catch{
+            Debug.LogWarning("UI_Controller.cs: Error in playing video or video file not uploaded!");
+        }
     }
 
-    public void BrowseVideo(){
-        demoEnd -= demoSafeRep1;
-        demoConstraint = (demoConstraint - demoSafeRep1);
-        demoSafeRep2 -= (demoSafeRep2 - demoSafeRep1);
+    public void BrowseVideo(){        
+        try{
+            videoFilePath = StandaloneFileBrowser.OpenFilePanel("Open video data file", "", "", false)[0];
+            vidPlayer.url = videoFilePath;
+        }catch{
+            Debug.LogWarning("UI_Controller.cs: Error in opening video file or operation cancelled!");
+            return;
+        }
+        vidPlayer.frame = 1;
+        vidPlayer.Pause();
+    }
 
-        vidTex.time = demoConstraint;
+    public void ScrollVideo(float t){
+        vidPlayer.time = vidPlayer.length * t;
     }
 
     public void MoveVideo(){
@@ -139,7 +151,7 @@ public class UI_Controller : MonoBehaviour
         info[6].text = rad[idx].ToString();
         selectedConsIdx = idx;
 
-        //Change color to indicate selected constraint
+        //Change color to indicate selected constraint (Not Implemented)
         /*GameObject[] constraints = GameObject.FindGameObjectsWithTag("Constraint");
         foreach (GameObject c in constraints)
         {
@@ -243,7 +255,7 @@ public class UI_Controller : MonoBehaviour
     }
 
     private void Start() {
-        vidTex = video.GetComponent<VideoPlayer>();
+        vidPlayer = video.GetComponent<VideoPlayer>();
         dropdownConstraintList = constraintList.GetComponent<Dropdown>();
     }
 
@@ -253,5 +265,10 @@ public class UI_Controller : MonoBehaviour
             Vector3 pos = Input.mousePosition;
             video.transform.position = pos;
         }
+
+        /* Update slider to current video time (SLOW)
+        if(vidPlayer.isPlaying){
+            videoSlider.value = (float)(vidPlayer.time / vidPlayer.length);
+        }*/
     }
 }

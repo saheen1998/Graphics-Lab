@@ -10,7 +10,7 @@ using SFB;
 
 public class RobotControllerScript : MonoBehaviour
 {
-    public float animationSpeed = 2;
+    public float animationSpeed = 1;
     public Text textAnimSpeed;
     public enum enMotion{regular, dab};
     public enMotion motion = enMotion.regular;
@@ -160,8 +160,8 @@ public class RobotControllerScript : MonoBehaviour
 			joint_data = new StreamReader(UIController.GetComponent<UI_Controller>().jointDataFilePath);
 			temp = new StreamReader(UIController.GetComponent<UI_Controller>().jointDataFilePath);
 		}catch{
-			Debug.LogWarning(gameObject.name + " - RobotControllerScript.cs: Joint data file cannot be read or does not exist!");    //ERROR
-			MessageBox.Show("Joint data file cannot be read or does not exist!", "Error!");
+			Debug.LogWarning(gameObject.name + " - RobotControllerScript.cs: Joint data file not loaded, cannot be read or does not exist!");    //ERROR
+			MessageBox.Show("Joint data file not loaded, cannot be read or does not exist!", "Warning!");
 			return;
 		}
 
