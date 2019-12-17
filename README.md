@@ -28,7 +28,7 @@
 
 ## General information (implementation in Unity):
 1. Since the Y axis is the up-vector in Unity and Z is the up-vector in the demonstration, the scripts use the Z values from the CSV files as Y and vice versa. Similar approach is used for rotations and angles. (Rotations can get messy and would probably require time to understand the implementation)
-2. Windows executable file uses a custom file browser which is included using SFB in the assembly reference.
+2. Standalone executable file uses a custom file browser which is included using SFB (Standalone File Browser) in the assembly reference.
 3. Changing OS platforms would require changes to the file browser code and the message box code.
 4. Some joints in the Sawyer model uses anti-clockwise as positive direction while others use clockwise as positive.
 5. To implement the rotations correctly, the Sawyer model has child gameobjects ("Body") in some joint objects to reset the rotations to zero for each joint.

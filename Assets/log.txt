@@ -1,6 +1,8 @@
-2019/12/16 12:40:09 - Warning
+2019/12/17 09:22:09 - Warning
 	CamFree - CamConstraint.cs: Points not found!
-2019/12/16 12:40:12 - Warning
+2019/12/17 09:22:12 - Warning
 	Sawyer RobotController - RobotControllerScript.cs: Joint data file not loaded, cannot be read or does not exist!
-2019/12/16 12:40:19 - Warning
-	Sawyer RobotController - RobotControllerScript: Joint animation clip not found
+2019/12/17 09:22:49 - Warning
+	Pen 1 - Constraint_prismatic.cs: Prismatic constraint cannot be placed using current constraint data!
+2019/12/17 09:22:55 - Warning
+	Pen 1 - Constraint_prismatic.cs: Prismatic constraint cannot be placed using current constraint data!

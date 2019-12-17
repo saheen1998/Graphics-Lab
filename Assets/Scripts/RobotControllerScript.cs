@@ -161,7 +161,7 @@ public class RobotControllerScript : MonoBehaviour
 			temp = new StreamReader(UIController.GetComponent<UI_Controller>().jointDataFilePath);
 		}catch{
             LogHandler.Logger.Log(gameObject.name + " - RobotControllerScript.cs: Joint data file not loaded, cannot be read or does not exist!", LogType.Warning);
-			MessageBox.Show("Joint data file not loaded, cannot be read or does not exist!", "Warning!");
+			LogHandler.Logger.ShowMessage("Joint data file not loaded, cannot be read or does not exist!", "Warning!");
 			return;
 		}
 
@@ -173,7 +173,7 @@ public class RobotControllerScript : MonoBehaviour
         string[] tempstr = tempdata.Split(new char[] {','} );
         if(tempstr.Length != 7){
             LogHandler.Logger.Log(gameObject.name + " - RobotControllerScript.cs: Not a joint data file with 7 joint data points for angles!", LogType.Error);
-			MessageBox.Show("Not a joint data file with 7 joint data points for angles!", "Error!");
+			LogHandler.Logger.ShowMessage("Not a joint data file with 7 joint data points for angles!", "Error!");
             return;
         }
 
@@ -339,7 +339,7 @@ public class RobotControllerScript : MonoBehaviour
             tEnd = double.Parse(tData[4]);
         }catch{
             LogHandler.Logger.Log(gameObject.name + " - RobotControllerScript.cs: Timestamp data file cannot be read or does not exist!", LogType.Warning);
-            MessageBox.Show("Timestamp data file cannot be read or does not exist!", "Error!");
+            LogHandler.Logger.ShowMessage("Timestamp data file cannot be read or does not exist!", "Error!");
             return;
         }
         

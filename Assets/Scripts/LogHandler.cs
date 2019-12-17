@@ -8,6 +8,7 @@ public class LogHandler : MonoBehaviour
 {
     private string logFilePath;
     private StreamWriter writer;
+    private DialogModule msgModule;
 
     public static LogHandler Logger{ get; private set; }
 
@@ -17,6 +18,7 @@ public class LogHandler : MonoBehaviour
 
     void Start()
     {
+        msgModule = gameObject.GetComponent<DialogModule>();
         logFilePath = Application.dataPath + "/log.txt";
         writer = new StreamWriter(logFilePath);
     }
@@ -33,5 +35,9 @@ public class LogHandler : MonoBehaviour
         }
         writer.WriteLine(System.DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss") + " - " + type + "\n\t" + logString);
         writer.Flush();
+    }
+
+    public void ShowMessage(string msg, string title){
+        msgModule.ShowMessage(msg);
     }
 }

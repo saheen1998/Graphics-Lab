@@ -39,7 +39,7 @@ public class Constraint_prismatic : MonoBehaviour {
 				dz = double.Parse(consData[5]);
 			}catch{
            		LogHandler.Logger.Log(gameObject.name + " - Constraint_prismatic.cs: Constraint data file cannot be read or does not exist!", LogType.Warning);
-				MessageBox.Show("Constraint data file cannot be read or does not exist!", "Error!");
+				LogHandler.Logger.ShowMessage("Constraint data file cannot be read or does not exist!", "Error!");
 				return;
 			}
 		}else{
@@ -60,7 +60,7 @@ public class Constraint_prismatic : MonoBehaviour {
 			xyz_data = new StreamReader(UIscr.pointDataFilePath);
 		}catch{
            	LogHandler.Logger.Log(gameObject.name + " - Constraint_prismatic.cs: Point data file cannot be read or does not exist!", LogType.Warning);
-			MessageBox.Show("Point data file cannot be read or does not exist!", "Error!");
+			LogHandler.Logger.ShowMessage("Point data file cannot be read or does not exist!", "Error!");
 			return;
 		}
 		
@@ -101,7 +101,7 @@ public class Constraint_prismatic : MonoBehaviour {
 		//Move plane center to centroid
 		if(n == 0){
            	LogHandler.Logger.Log(gameObject.name + " - Constraint_prismatic.cs: Prismatic constraint cannot be placed using current constraint data!", LogType.Warning);
-			MessageBox.Show("Prismatic constraint cannot be placed using current constraint data!", "Warning!");
+			LogHandler.Logger.ShowMessage("Prismatic constraint cannot be placed using current constraint data!", "Warning!");
 			return;
 		}
 

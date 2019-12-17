@@ -41,7 +41,7 @@ public class Constraint_plane : MonoBehaviour {
 				dz = double.Parse(consData[5]);
 			}catch{
            		LogHandler.Logger.Log(gameObject.name + " - Constraint_planar.cs: Constraint data file cannot be read or does not exist!", LogType.Warning);
-				MessageBox.Show("Constraint data file cannot be read or does not exist!", "Error!");
+				LogHandler.Logger.ShowMessage("Constraint data file cannot be read or does not exist!", "Error!");
 				return;
 			}
 		}else{
@@ -62,7 +62,7 @@ public class Constraint_plane : MonoBehaviour {
 			xyz_data = new StreamReader(UIscr.pointDataFilePath);
 		}catch{
            	LogHandler.Logger.Log(gameObject.name + " - Constraint_plane.cs: Point data file cannot be read or does not exist!", LogType.Warning);
-			MessageBox.Show("Point data file cannot be read or does not exist!", "Error!");
+			LogHandler.Logger.ShowMessage("Point data file cannot be read or does not exist!", "Error!");
 			return;
 		}
 		
@@ -99,7 +99,7 @@ public class Constraint_plane : MonoBehaviour {
 		//Move plane center to centroid
 		if(n == 0){
            	LogHandler.Logger.Log(gameObject.name + " - Constraint_plane.cs: Planar constraint cannot be placed using current constraint data!", LogType.Warning);
-			MessageBox.Show("Planar constraint cannot be placed using current constraint data!", "Warning!");
+			LogHandler.Logger.ShowMessage("Planar constraint cannot be placed using current constraint data!", "Warning!");
 			return;
 		}
 

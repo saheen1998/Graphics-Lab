@@ -82,7 +82,7 @@ public class ForceGraphScript : MonoBehaviour
 			forceD_data = new StreamReader(UIController.GetComponent<UI_Controller>().forceDemoFilePath);
 		}catch{
            	LogHandler.Logger.Log(gameObject.name + " - ForceGraphScript.cs: Demo force data file does not exist or cannot be read!", LogType.Error);
-			MessageBox.Show("Demo force data file does not exist or cannot be read!", "Error!");
+			LogHandler.Logger.ShowMessage("Demo force data file does not exist or cannot be read!", "Error!");
 			return;
 		}
 
@@ -110,7 +110,7 @@ public class ForceGraphScript : MonoBehaviour
 			forceP_data = new StreamReader(UIController.GetComponent<UI_Controller>().forcePlayFilePath);
 		}catch{
            	LogHandler.Logger.Log(gameObject.name + " - ForceGraphScript.cs: Playback force data file does not exist or cannot be read!", LogType.Error);
-			MessageBox.Show("Playback force data file does not exist or cannot be read!", "Error!");
+			LogHandler.Logger.ShowMessage("Playback force data file does not exist or cannot be read!", "Error!");
 			return;
 		}
 
